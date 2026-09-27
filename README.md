@@ -30,7 +30,6 @@ menu filters, ranks and navigates whatever is there:
 - **Fuzzy ranking** — the same `command-score` algorithm as cmdk, best matches first, groups ranked too
 - **Keyboard** — arrows, Home/End, ⌘ for first/last, ⌥ for groups, Ctrl+J/K/N/P, Enter; IME-safe
 - **Screen readers** — a real `<input>` as a combobox, a listbox, options and `aria-activedescendant`
-- **Dialog-ready** — drop it in a native `<dialog>` for the overlay, focus trap and Escape
 - **Themeable** — every colour, size and timing is a CSS custom property
 - **Zero dependencies** — ~4 KB brotli, no framework
 
@@ -113,39 +112,6 @@ menu.addEventListener("cmdk:select", event => {
 
 `cmdk:select` fires on the item itself and bubbles, for a click or for Enter.
 Listen on the item for one action, or on the menu for all of them.
-
-### In a dialog
-
-A native `<dialog>` already draws the overlay, traps focus, closes on Escape and
-honours `autofocus` — so the menu needs nothing more. The theme styles
-`dialog:has(> cmdk-root)` so the menu is its only surface, and leaves the
-`::backdrop` to your own dialog styles.
-
-```html
-<dialog id="menu">
-  <cmdk-root label="Global Command Menu">
-    <input placeholder="Search…" autofocus>
-    <cmdk-list>…</cmdk-list>
-  </cmdk-root>
-</dialog>
-```
-
-```js
-const dialog = document.getElementById("menu")
-
-// Toggle the menu when ⌘K is pressed
-document.addEventListener("keydown", event => {
-  if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
-    event.preventDefault()
-    dialog.open ? dialog.close() : dialog.showModal()
-  }
-})
-
-dialog.addEventListener("cmdk:select", () => dialog.close())
-```
-
-The menu never listens for ⌘K itself, so you keep full control of the keybind
-and its context.
 
 ### Nested pages
 
@@ -254,7 +220,6 @@ container, or on a single element:
 | `--cmdk-separator-color` | `#e8e8e8` |
 | `--cmdk-separator-spacing` | `0.25rem` |
 | `--cmdk-empty-height` | `3rem` |
-| `--cmdk-dialog-offset` | `20vh` |
 | `--cmdk-transition-duration` | `100ms` |
 | `--cmdk-transition-easing` | `ease` |
 
@@ -402,13 +367,15 @@ npm run playground       # the fixture pages, as a live playground
 Tests come in two layers. **Vitest** (`test/unit/`) covers the pure logic and
 the elements' own contract in jsdom. **Playwright** (`test/browser/`) drives real
 browsers for everything that only a browser can tell you: typing, keyboard
-navigation, pointer selection, scrolling, dialogs and theming.
+navigation, pointer selection, scrolling and theming.
 
-Every one of cmdk's own browser tests is ported under its original title and
-`describe` block, so the two suites can be compared line by line; the tests
-cmdk-zero adds live in `cmdk-zero` blocks beside them. The one upstream page
-without a counterpart is a list portalled out of the menu: items are found
-inside `<cmdk-root>`, so the list has to stay inside it too.
+cmdk's own browser tests are ported under their original titles and `describe`
+blocks, so the two suites can be compared line by line; the tests cmdk-zero adds
+live in `cmdk-zero` blocks beside them. Two parts of upstream's suite have no
+counterpart, by design. `Command.Dialog`'s test, because the menu is not tied to
+any container: put `<cmdk-root>` in whatever overlay your page already uses. And
+a list portalled out of the menu, because items are found inside `<cmdk-root>`,
+so the list has to stay inside it too.
 
 ## Credits
 

@@ -107,6 +107,20 @@ test.describe("cmdk-zero", () => {
       await expect(cmdk.selected).toBeInViewport()
     })
 
+    // The list grows from 0px as the hidden menu is shown, and keeping the first
+    // item in view while it is still short must not leave its heading cut off.
+    test("a menu that is shown later opens with the first group's heading in view", async ({ page, cmdk }) => {
+      await page.goto("/reveal.html")
+      await page.getByTestId("show").click()
+      await cmdk.expectSelected("Home")
+
+      await expect.poll(() => cmdk.list.evaluate(list => list.style.getPropertyValue("--cmdk-list-height"))).not.toBe("0.0px")
+      await page.waitForTimeout(300)
+
+      expect(await cmdk.list.evaluate(list => list.scrollTop)).toBe(0)
+      await expect(cmdk.group("Navigation").locator("cmdk-group-heading")).toBeInViewport()
+    })
+
     test("keeps the selected item in view when the list shrinks", async ({ page, cmdk }) => {
       await page.goto("/keybinds.html")
       await cmdk.press("End")

@@ -86,7 +86,8 @@ export default class CmdkListElement extends HTMLElement {
   // the keyboard just scrolled to. Only the list scrolls here, never the page:
   // this runs on load too, when nothing asked for the menu to be brought into
   // view. The first item of a group keeps its heading, so a list that grows
-  // from nothing — a dialog opening — does not settle with the heading cut off.
+  // from nothing — a hidden menu being shown — does not settle with the heading
+  // cut off.
   #keepSelectionInView() {
     const item = this.querySelector("cmdk-item[data-selected]:not([hidden])")
     if (item) scrollItemIntoView(item, { container: this })

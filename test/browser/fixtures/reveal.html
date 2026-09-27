@@ -2,17 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>cmdk-zero — dialog with groups</title>
+    <title>cmdk-zero — reveal</title>
     <link rel="stylesheet" href="/cmdk-zero.css">
     <script type="module" src="/setup.js"></script>
   </head>
   <body>
-    <button data-testid="open">Open</button>
+    <button data-testid="show">Show</button>
 
-    <!-- Closed on load, so the list measures 0px tall and animates open. -->
-    <dialog id="menu">
+    <!-- Hidden on load, so the list measures 0px tall and animates open when the
+         menu is shown — the way any popover, drawer or overlay would show it. -->
+    <div id="container" hidden>
       <cmdk-root label="Global Command Menu">
-        <input placeholder="Search…" autofocus>
+        <input placeholder="Search…">
         <cmdk-list>
           <cmdk-empty>No results.</cmdk-empty>
           <cmdk-group heading="Navigation">
@@ -35,12 +36,12 @@
           </cmdk-group>
         </cmdk-list>
       </cmdk-root>
-    </dialog>
+    </div>
 
     <script type="module">
-      const dialog = document.getElementById("menu")
-
-      document.querySelector("[data-testid=open]").addEventListener("click", () => dialog.showModal())
+      document.querySelector("[data-testid=show]").addEventListener("click", () => {
+        document.getElementById("container").hidden = false
+      })
     </script>
   </body>
 </html>

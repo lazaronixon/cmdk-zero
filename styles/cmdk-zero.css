@@ -52,8 +52,6 @@
 
   --cmdk-empty-height: 3rem;
 
-  --cmdk-dialog-offset: 20vh;
-
   --cmdk-transition-duration: 100ms;
   --cmdk-transition-easing: ease;
 }
@@ -167,20 +165,6 @@ cmdk-loading {
    list shows every item, so nothing is lost; it just cannot be filtered. */
 cmdk-root:not(:defined) cmdk-empty {
   display: none;
-}
-
-/* A menu inside a native `<dialog>`: the dialog draws the overlay, traps focus
-   and closes on Escape, and the menu is the dialog's only surface. The overlay
-   is left to the page, so the menu dims the page like every other dialog. */
-dialog:has(> cmdk-root) {
-  width: 100%;
-  max-width: var(--cmdk-width, 40rem);
-  margin: var(--cmdk-dialog-offset, 20vh) auto auto;
-  padding: 0;
-  overflow: visible;
-  color: inherit;
-  background: transparent;
-  border: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

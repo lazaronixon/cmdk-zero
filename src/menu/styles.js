@@ -12,8 +12,7 @@ const PARTS = "cmdk-root, cmdk-list, cmdk-list-sizer, cmdk-group, cmdk-group-hea
 //   to any `display` in a theme, which would leave every non-match on screen.
 // - Items are chosen by pointer, and a press that drags across them would
 //   otherwise select their text instead.
-// - Scrolling past the end of the list would scroll the page behind it — or
-//   behind the dialog it sits in.
+// - Scrolling past the end of the list would scroll whatever is behind it.
 const RULES = `
 :where(${PARTS}) { display: block; }
 

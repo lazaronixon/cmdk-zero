@@ -1,4 +1,5 @@
 import { ensureId } from "../helpers/id_helper"
+import { scrollWithin } from "../menu/navigation"
 
 const SIZER_TAG = "cmdk-list-sizer"
 
@@ -87,16 +88,6 @@ export default class CmdkListElement extends HTMLElement {
   // view.
   #keepSelectionInView() {
     const item = this.querySelector("cmdk-item[data-selected]:not([hidden])")
-    if (!item) return
-
-    const top = this.getBoundingClientRect().top + this.clientTop
-    const bottom = top + this.clientHeight
-    const rect = item.getBoundingClientRect()
-
-    if (rect.bottom > bottom) {
-      this.scrollTop += rect.bottom - bottom
-    } else if (rect.top < top) {
-      this.scrollTop -= top - rect.top
-    }
+    if (item) scrollWithin(this, item)
   }
 }

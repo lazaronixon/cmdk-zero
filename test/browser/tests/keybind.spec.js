@@ -79,6 +79,24 @@ test.describe("without vim bindings", () => {
   })
 })
 
+test.describe("scrolling", () => {
+  // The playground's third menu sits below the fold of a 900px viewport.
+  test("loading a page never scrolls it to a menu below the fold", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 600 })
+    await page.goto("/index.html")
+
+    await expect(page.locator("cmdk-root").nth(2).locator("cmdk-item[data-selected]")).toHaveCount(1)
+    expect(await page.evaluate(() => scrollY)).toBe(0)
+  })
+
+  test("an initial value far down the list is scrolled into the list's view", async ({ page, cmdk }) => {
+    await page.goto("/keybinds.html?initialValue=last")
+
+    await cmdk.expectSelected("last")
+    await expect(cmdk.selected).toBeInViewport({ ratio: 1 })
+  })
+})
+
 test.describe("edges", () => {
   test("Home and End jump to the first and last item", async ({ page, cmdk }) => {
     await page.goto("/keybinds.html")

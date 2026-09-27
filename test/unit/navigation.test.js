@@ -1,4 +1,4 @@
-import { adjacentGroupItem, adjacentItem, scrollItemIntoView } from "src/menu/navigation"
+import { adjacentGroupItem, adjacentItem, scrollItemIntoView, scrollWithin } from "src/menu/navigation"
 import { afterEach, describe, expect, test } from "vitest"
 import { scrolled, unmount } from "./test_helper"
 
@@ -96,5 +96,56 @@ describe("scrollItemIntoView", () => {
     scrollItemIntoView(byValue.b, items)
 
     expect(scrolled).toEqual([ byValue.b ])
+  })
+
+  test("scrolls only the container when given one", () => {
+    const { items, byValue } = build()
+    const container = document.querySelector("div")
+
+    scrollItemIntoView(byValue.a, items, { container })
+
+    expect(scrolled).toEqual([])
+  })
+})
+
+// jsdom has no layout, so the geometry is stubbed: a 100px-tall box at the top
+// of the viewport, with the element somewhere relative to it.
+describe("scrollWithin", () => {
+  function box(elementTop, elementHeight = 20) {
+    const container = document.createElement("div")
+    const element = document.createElement("div")
+    container.append(element)
+
+    Object.defineProperty(container, "clientHeight", { value: 100 })
+    Object.defineProperty(container, "clientTop", { value: 0 })
+    container.getBoundingClientRect = () => ({ top: 0 })
+    element.getBoundingClientRect = () => ({ top: elementTop, bottom: elementTop + elementHeight })
+    container.scrollTop = 50
+
+    return { container, element }
+  }
+
+  test("scrolls down just enough to reveal an element below", () => {
+    const { container, element } = box(110)
+
+    scrollWithin(container, element)
+
+    expect(container.scrollTop).toBe(80)
+  })
+
+  test("scrolls up just enough to reveal an element above", () => {
+    const { container, element } = box(-30)
+
+    scrollWithin(container, element)
+
+    expect(container.scrollTop).toBe(20)
+  })
+
+  test("leaves a visible element alone", () => {
+    const { container, element } = box(40)
+
+    scrollWithin(container, element)
+
+    expect(container.scrollTop).toBe(50)
   })
 })

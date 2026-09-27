@@ -20,6 +20,14 @@ const OBSERVED_PART_ATTRIBUTES = [ "value", "keywords", "disabled", "force-mount
 // properties and would shadow the accessors below for good.
 const UPGRADABLE_PROPERTIES = [ "filter", "value", "search", "shouldFilter", "loop", "vimBindings", "disablePointerSelection" ]
 
+// How far a new selection scrolls. The user moving it — with the keyboard, or
+// by searching — scrolls whatever it takes, page included. The menu or your
+// code choosing one scrolls only the list, so a page never jumps on load to a
+// menu below the fold. The pointer never scrolls: the item is already under it.
+const SCROLL_PAGE = "page"
+const SCROLL_LIST = "list"
+const SCROLL_NONE = "none"
+
 export default class CmdkRootElement extends HTMLElement {
   static observedAttributes = [ "value", "label", "should-filter" ]
 
@@ -59,9 +67,9 @@ export default class CmdkRootElement extends HTMLElement {
     this.#refresh()
     if (this.#value) {
       this.#paintSelection()
-      this.#scrollSelectedIntoView()
+      this.#scrollSelectedIntoView(SCROLL_LIST)
     } else {
-      this.#selectFirstItem()
+      this.#selectFirstItem({ scroll: SCROLL_LIST })
     }
   }
 
@@ -76,7 +84,7 @@ export default class CmdkRootElement extends HTMLElement {
     if (!this.#upgraded || oldValue === newValue) return
 
     if (name === "value") {
-      this.#select(newValue ?? "")
+      this.#select(newValue ?? "", { scroll: SCROLL_LIST })
     } else if (name === "label") {
       this.#applyInputAttributes()
     } else {
@@ -97,7 +105,7 @@ export default class CmdkRootElement extends HTMLElement {
       return
     }
 
-    this.#select(value)
+    this.#select(value, { scroll: SCROLL_LIST })
   }
 
   get search() {
@@ -290,7 +298,7 @@ export default class CmdkRootElement extends HTMLElement {
     if (this.disablePointerSelection) return
 
     const item = this.#itemFrom(event)
-    if (item) this.#select(item.value, { scroll: false })
+    if (item) this.#select(item.value, { scroll: SCROLL_NONE })
   }
 
   #itemFrom(event) {
@@ -302,7 +310,7 @@ export default class CmdkRootElement extends HTMLElement {
   #trigger(item) {
     if (item.disabled) return
 
-    this.#select(item.value, { scroll: false })
+    this.#select(item.value, { scroll: SCROLL_NONE })
     item.dispatchEvent(new CustomEvent("cmdk:select", { detail: { value: item.value }, bubbles: true }))
   }
 
@@ -325,7 +333,7 @@ export default class CmdkRootElement extends HTMLElement {
     const selectionIsGone = previous && (!this.contains(previous) || previous.hidden || previous.value !== this.#value)
 
     if (!this.#value || selectionIsGone) {
-      this.#selectFirstItem()
+      this.#selectFirstItem({ scroll: SCROLL_LIST })
     } else {
       this.#paintSelection()
     }
@@ -376,15 +384,15 @@ export default class CmdkRootElement extends HTMLElement {
     this.#mutationObserver?.takeRecords()
   }
 
-  #selectFirstItem() {
-    this.#select(this.#selectableItems()[0]?.value ?? "")
+  #selectFirstItem(options) {
+    this.#select(this.#selectableItems()[0]?.value ?? "", options)
   }
 
   #selectItem(item) {
     if (item) this.#select(item.value)
   }
 
-  #select(value, { scroll = true } = {}) {
+  #select(value, { scroll = SCROLL_PAGE } = {}) {
     const newValue = value.trim()
 
     if (newValue === this.#value) {
@@ -400,7 +408,7 @@ export default class CmdkRootElement extends HTMLElement {
     if (document.activeElement === this) (this.#input ?? this.list)?.focus()
 
     this.#paintSelection()
-    if (scroll) this.#scrollSelectedIntoView()
+    if (scroll !== SCROLL_NONE) this.#scrollSelectedIntoView(scroll)
 
     this.dispatchEvent(new CustomEvent("cmdk:change", { detail: { value: newValue }, bubbles: true }))
   }
@@ -430,8 +438,13 @@ export default class CmdkRootElement extends HTMLElement {
     })
   }
 
-  #scrollSelectedIntoView() {
-    if (this.#selectedItem) scrollItemIntoView(this.#selectedItem, this.#selectableItems())
+  #scrollSelectedIntoView(scroll) {
+    if (!this.#selectedItem) return
+
+    const container = scroll === SCROLL_LIST ? this.list : null
+    if (scroll === SCROLL_LIST && !container) return
+
+    scrollItemIntoView(this.#selectedItem, this.#selectableItems(), { container })
   }
 
   #items() {

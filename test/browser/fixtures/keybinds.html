@@ -42,6 +42,7 @@
 
       if (params.has("noVim")) root.setAttribute("vim-bindings", "false")
       if (params.has("loop")) root.setAttribute("loop", "")
+      if (params.has("initialValue")) root.setAttribute("value", params.get("initialValue"))
     </script>
   </body>
 </html>

@@ -262,7 +262,31 @@ describe("selection", () => {
     const root = mount(GROUPS.replace("<cmdk-root>", "<cmdk-root value=\"Pear\">"))
 
     expect(selectedValue(root)).toBe("Pear")
-    expect(scrolled.at(-1)).toBe(root.querySelector("cmdk-item[data-value=\"Pear\"]"))
+  })
+
+  // Only the list scrolls for a selection the menu made itself, so loading a
+  // page never jumps to a menu below the fold.
+  test("never scrolls the page for the initial selection", () => {
+    mount(GROUPS.replace("<cmdk-root>", "<cmdk-root value=\"Pear\">"))
+    mount(GROUPS)
+
+    expect(scrolled).toEqual([])
+  })
+
+  test("never scrolls the page for a value set from code", () => {
+    const root = mount(GROUPS)
+
+    root.value = "Pear"
+
+    expect(scrolled).toEqual([])
+  })
+
+  test("never scrolls the page on pointer selection", () => {
+    const root = mount(GROUPS)
+
+    root.querySelector("cmdk-item[value=\"last\"]").dispatchEvent(new Event("pointermove", { bubbles: true }))
+
+    expect(scrolled).toEqual([])
   })
 
   test("selects by setting value, and fires cmdk:change", () => {

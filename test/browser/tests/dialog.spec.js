@@ -69,3 +69,22 @@ test.describe("cmdk-zero", () => {
     await expect(page.locator("dialog")).not.toBeVisible()
   })
 })
+
+test.describe("cmdk-zero, with groups that overflow the list", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/dialog-groups.html")
+  })
+
+  // The list grows from 0px as the dialog opens, and keeping the first item in
+  // view while it is still short must not leave its group's heading cut off.
+  test("opens with the first group's heading in view", async ({ page, cmdk }) => {
+    await page.getByTestId("open").click()
+    await cmdk.expectSelected("Home")
+
+    await expect.poll(() => cmdk.list.evaluate(list => list.style.getPropertyValue("--cmdk-list-height"))).not.toBe("0.0px")
+    await page.waitForTimeout(300)
+
+    expect(await cmdk.list.evaluate(list => list.scrollTop)).toBe(0)
+    await expect(cmdk.group("Navigation").locator("cmdk-group-heading")).toBeInViewport()
+  })
+})

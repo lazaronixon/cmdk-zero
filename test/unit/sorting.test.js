@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "vitest"
-import { sortGroups, sortItems } from "src/menu/sorting"
+import { recordOrder, restoreOrder, sortGroups, sortItems } from "src/menu/sorting"
 import { unmount } from "./test_helper"
 
 afterEach(() => unmount())
@@ -101,5 +101,47 @@ describe("sortGroups", () => {
 
     const children = Array.from(document.querySelector("cmdk-list-sizer").children).map(element => element.getAttribute("value"))
     expect(children).toEqual([ "loose", "high", "low" ])
+  })
+})
+
+describe("restoreOrder", () => {
+  function children() {
+    return Array.from(document.querySelector("cmdk-list-sizer").children).map(element => element.getAttribute("value"))
+  }
+
+  test("puts the recorded children back in the order they were recorded", () => {
+    document.body.innerHTML = `
+      <cmdk-list-sizer>
+        <cmdk-item value="a"></cmdk-item>
+        <cmdk-separator value="separator"></cmdk-separator>
+        <cmdk-item value="b"></cmdk-item>
+      </cmdk-list-sizer>
+    `
+    const sizer = document.querySelector("cmdk-list-sizer")
+    const order = recordOrder([ sizer ])
+
+    sizer.append(sizer.querySelector("[value=a]"))
+    restoreOrder(order)
+
+    expect(children()).toEqual([ "a", "separator", "b" ])
+  })
+
+  test("skips children removed since, and keeps ones added since after the rest", () => {
+    document.body.innerHTML = `
+      <cmdk-list-sizer>
+        <cmdk-item value="a"></cmdk-item>
+        <cmdk-item value="b"></cmdk-item>
+        <cmdk-item value="c"></cmdk-item>
+      </cmdk-list-sizer>
+    `
+    const sizer = document.querySelector("cmdk-list-sizer")
+    const order = recordOrder([ sizer ])
+
+    sizer.querySelector("[value=b]").remove()
+    sizer.prepend(Object.assign(document.createElement("cmdk-item"), { value: "new" }))
+    sizer.append(sizer.querySelector("[value=a]"))
+    restoreOrder(order)
+
+    expect(children()).toEqual([ "a", "c", "new" ])
   })
 })

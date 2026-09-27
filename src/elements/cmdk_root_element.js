@@ -1,6 +1,6 @@
 import { adjacentGroupItem, adjacentItem, scrollItemIntoView } from "../menu/navigation"
 import { computeFiltered, defaultFilter } from "../menu/filtering"
-import { sortGroups, sortItems } from "../menu/sorting"
+import { recordOrder, restoreOrder, sortGroups, sortItems } from "../menu/sorting"
 import { ListenerBin } from "../helpers/listener_helper"
 import { installStyles } from "../menu/styles"
 import { resolveKeyAction } from "../menu/keyboard"
@@ -37,6 +37,7 @@ export default class CmdkRootElement extends HTMLElement {
   #value = ""
   #selectedItem = null
   #filtered = { count: 0, items: new Map(), groups: new Set() }
+  #authoredOrder = null
   #listeners = new ListenerBin()
   #mutationObserver = null
   #upgraded = false
@@ -187,6 +188,12 @@ export default class CmdkRootElement extends HTMLElement {
   blur() {
     this.#input?.blur()
     super.blur()
+  }
+
+  // The first item the keyboard could land on, the way the menu picks one on
+  // load. Chosen from code, so only the list scrolls to it, never the page.
+  selectFirst() {
+    this.#selectFirstItem({ scroll: SCROLL_LIST })
   }
 
   #upgradeProperties() {
@@ -376,8 +383,12 @@ export default class CmdkRootElement extends HTMLElement {
     })
 
     if (filtered.isFiltering) {
+      this.#authoredOrder ??= recordOrder([ this.list?.sizer, ...groups ].filter(Boolean))
       sortItems(items, filtered.items)
       sortGroups(groups.filter(group => filtered.groups.has(group)), filtered.items, group => items.filter(item => group.contains(item)))
+    } else if (this.#authoredOrder) {
+      restoreOrder(this.#authoredOrder)
+      this.#authoredOrder = null
     }
 
     // The sort just moved nodes around; those are our own mutations, not news.

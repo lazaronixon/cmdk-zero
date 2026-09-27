@@ -112,6 +112,27 @@ describe("keeping the selection in view", () => {
     expect(list.scrollTop).toBe(0)
   })
 
+  test("brings the heading back with the first item of a group", () => {
+    const list = listOf(mount(`
+      <cmdk-root>
+        <input>
+        <cmdk-list>
+          <cmdk-group heading="Fruits">
+            <cmdk-item>Apple</cmdk-item>
+            <cmdk-item>Banana</cmdk-item>
+          </cmdk-group>
+        </cmdk-list>
+      </cmdk-root>
+    `))
+    layout(list, 0)
+    list.querySelector("cmdk-group-heading").getBoundingClientRect = () => ({ top: -30, bottom: 0 })
+    list.scrollTop = 30
+
+    observers.at(-1).resize()
+
+    expect(list.scrollTop).toBe(0)
+  })
+
   test("does nothing when nothing is selected", () => {
     const root = mount(MENU)
     const list = listOf(root)

@@ -1,5 +1,5 @@
 import { ensureId } from "../helpers/id_helper"
-import { scrollWithin } from "../menu/navigation"
+import { scrollItemIntoView } from "../menu/navigation"
 
 const SIZER_TAG = "cmdk-list-sizer"
 
@@ -85,9 +85,13 @@ export default class CmdkListElement extends HTMLElement {
   // A list that shrinks — while its height animates, say — would clip the item
   // the keyboard just scrolled to. Only the list scrolls here, never the page:
   // this runs on load too, when nothing asked for the menu to be brought into
-  // view.
+  // view. The first item of a group keeps its heading, so a list that grows
+  // from nothing — a dialog opening — does not settle with the heading cut off.
   #keepSelectionInView() {
     const item = this.querySelector("cmdk-item[data-selected]:not([hidden])")
-    if (item) scrollWithin(this, item)
+    if (!item) return
+
+    const items = Array.from(this.querySelectorAll("cmdk-item:not([hidden], [disabled])"))
+    scrollItemIntoView(item, items, { container: this })
   }
 }

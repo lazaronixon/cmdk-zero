@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>cmdk-zero — dialog with groups</title>
+    <link rel="stylesheet" href="/cmdk-zero.css">
+    <script type="module" src="/setup.js"></script>
+  </head>
+  <body>
+    <button data-testid="open">Open</button>
+
+    <!-- Closed on load, so the list measures 0px tall and animates open. -->
+    <dialog id="menu">
+      <cmdk-root label="Global Command Menu">
+        <input placeholder="Search…" autofocus>
+        <cmdk-list>
+          <cmdk-empty>No results.</cmdk-empty>
+          <cmdk-group heading="Navigation">
+            <cmdk-item>Home</cmdk-item>
+            <cmdk-item>Inbox</cmdk-item>
+            <cmdk-item>Documents</cmdk-item>
+            <cmdk-item>Folders</cmdk-item>
+          </cmdk-group>
+          <cmdk-group heading="Actions">
+            <cmdk-item>New File</cmdk-item>
+            <cmdk-item>New Folder</cmdk-item>
+            <cmdk-item>Copy</cmdk-item>
+            <cmdk-item>Cut</cmdk-item>
+            <cmdk-item>Paste</cmdk-item>
+          </cmdk-group>
+          <cmdk-group heading="View">
+            <cmdk-item>Grid View</cmdk-item>
+            <cmdk-item>List View</cmdk-item>
+            <cmdk-item>Zoom In</cmdk-item>
+          </cmdk-group>
+        </cmdk-list>
+      </cmdk-root>
+    </dialog>
+
+    <script type="module">
+      const dialog = document.getElementById("menu")
+
+      document.querySelector("[data-testid=open]").addEventListener("click", () => dialog.showModal())
+    </script>
+  </body>
+</html>

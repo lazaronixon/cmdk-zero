@@ -25,3 +25,21 @@ export function sortGroups(groups, scores, itemsOf) {
     .sort((a, b) => b[1] - a[1])
     .forEach(([ group ]) => group.parentElement?.appendChild(group))
 }
+
+// Sorting leaves the nodes where it moved them, so the order you wrote is
+// recorded when a search starts and put back when it ends. Otherwise the
+// groups would stay ranked, with separators stranded between the wrong ones.
+export function recordOrder(containers) {
+  return new Map(containers.map(container => [ container, Array.from(container.childNodes) ]))
+}
+
+// Nodes removed since are skipped, and nodes added since keep their current
+// order after the ones that were recorded.
+export function restoreOrder(order) {
+  order.forEach((nodes, container) => {
+    const recorded = new Set(nodes)
+    const added = Array.from(container.childNodes).filter(node => !recorded.has(node))
+
+    container.append(...nodes.filter(node => node.parentNode === container), ...added)
+  })
+}

@@ -322,6 +322,29 @@ describe("selection", () => {
     expect(root.getAttribute("value")).toBe("xxx")
   })
 
+  test("selects the first selectable item with selectFirst(), skipping disabled ones", () => {
+    const root = mount(GROUPS)
+    root.value = "Pear"
+    const changes = recordEvents(root, "cmdk:change")
+
+    root.selectFirst()
+
+    expect(selectedValue(root)).toBe("first")
+    expect(changes).toEqual([ { value: "first" } ])
+    expect(scrolled).toEqual([])
+  })
+
+  test("selectFirst() skips items the search hid", () => {
+    const root = mount(GROUPS)
+    type(root, "pear")
+    root.value = "last"
+
+    root.selectFirst()
+
+    expect(visibleValues(root)).toEqual([ "Pear" ])
+    expect(selectedValue(root)).toBe("Pear")
+  })
+
   test("does not fire cmdk:change when the value stays the same", () => {
     const root = mount(BASIC)
     const changes = recordEvents(root, "cmdk:change")
@@ -482,6 +505,38 @@ describe("filtering", () => {
     const expected = [ "Blade", "Bard", "Bad" ].sort((a, b) => commandScore(b, "bad") - commandScore(a, "bad"))
     expect(expected[0]).toBe("Bad")
     expect(visibleValues(root)).toEqual(expected)
+  })
+
+  test("puts items, groups and separators back in the order you wrote once the search is cleared", () => {
+    const root = mount(`
+      <cmdk-root>
+        <input>
+        <cmdk-list>
+          <cmdk-group heading="Navigation">
+            <cmdk-item>Home</cmdk-item>
+            <cmdk-item>Inbox</cmdk-item>
+          </cmdk-group>
+          <cmdk-separator></cmdk-separator>
+          <cmdk-group heading="View">
+            <cmdk-item>Grid View</cmdk-item>
+            <cmdk-item>Zoom In</cmdk-item>
+          </cmdk-group>
+          <cmdk-separator></cmdk-separator>
+          <cmdk-group heading="Account">
+            <cmdk-item>Profile</cmdk-item>
+          </cmdk-group>
+        </cmdk-list>
+      </cmdk-root>
+    `)
+    const layout = () => Array.from(root.list.sizer.children).map(element => element.getAttribute("heading") ?? "—")
+
+    type(root, "zo")
+    expect(visibleValues(root)[0]).toBe("Zoom In")
+    type(root, "")
+
+    expect(layout()).toEqual([ "Navigation", "—", "View", "—", "Account" ])
+    expect(visibleValues(root)).toEqual([ "Home", "Inbox", "Grid View", "Zoom In", "Profile" ])
+    expect(selectedValue(root)).toBe("Home")
   })
 
   test("sorts groups by their best match, after loose items", () => {

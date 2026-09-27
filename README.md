@@ -347,7 +347,12 @@ have `value`, `heading` and `forceMount`; the list has `sizer`.
 
 ### Methods
 
-`focus()`, `blur()`.
+On `<cmdk-root>`:
+
+| | |
+| --- | --- |
+| `focus()`, `blur()` | focus or blur the search field, or the menu when it has none |
+| `selectFirst()` | selects the first item that is visible and not disabled, scrolling only the list; fires `cmdk:change` when the selection moves |
 
 ### Events
 

@@ -73,9 +73,30 @@ export default class CmdkListElement extends HTMLElement {
       cancelAnimationFrame(this.#animationFrame)
       this.#animationFrame = requestAnimationFrame(() => {
         this.style.setProperty("--cmdk-list-height", `${this.#sizer.offsetHeight.toFixed(1)}px`)
+        this.#keepSelectionInView()
       })
     })
 
     this.#resizeObserver.observe(this.#sizer)
+    this.#resizeObserver.observe(this)
+  }
+
+  // A list that shrinks — while its height animates, say — would clip the item
+  // the keyboard just scrolled to. Only the list scrolls here, never the page:
+  // this runs on load too, when nothing asked for the menu to be brought into
+  // view.
+  #keepSelectionInView() {
+    const item = this.querySelector("cmdk-item[data-selected]:not([hidden])")
+    if (!item) return
+
+    const top = this.getBoundingClientRect().top + this.clientTop
+    const bottom = top + this.clientHeight
+    const rect = item.getBoundingClientRect()
+
+    if (rect.bottom > bottom) {
+      this.scrollTop += rect.bottom - bottom
+    } else if (rect.top < top) {
+      this.scrollTop -= top - rect.top
+    }
   }
 }

@@ -118,4 +118,16 @@ test.describe("edges", () => {
 
     await expect(cmdk.selected).toBeInViewport()
   })
+
+  test("keeps the selected item in view when the list shrinks", async ({ page, cmdk }) => {
+    await page.goto("/keybinds.html")
+    await cmdk.input.focus()
+    await cmdk.press("End")
+    await expect(cmdk.selected).toBeInViewport()
+
+    await cmdk.element.evaluate(root => root.style.setProperty("--cmdk-list-height-limit", "8rem"))
+
+    await expect.poll(() => cmdk.list.evaluate(list => list.clientHeight)).toBeLessThan(140)
+    await expect(cmdk.selected).toBeInViewport({ ratio: 1 })
+  })
 })

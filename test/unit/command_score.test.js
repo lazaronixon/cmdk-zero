@@ -26,6 +26,13 @@ describe("commandScore", () => {
     expect(commandScore("a b", "b")).toBeGreaterThan(commandScore("a/b", "b"))
   })
 
+  // Past the first match, each word skipped on the way to the next one costs a
+  // little, whether the words are split by symbols or by spaces.
+  test("skipping more words after a match scores lower", () => {
+    expect(commandScore("a/c", "ac")).toBeGreaterThan(commandScore("a/b/c", "ac"))
+    expect(commandScore("a c", "ac")).toBeGreaterThan(commandScore("a b c", "ac"))
+  })
+
   test("fewer skipped characters score higher", () => {
     expect(commandScore("bad", "bd")).toBeGreaterThan(commandScore("bard", "bd"))
   })

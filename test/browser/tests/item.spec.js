@@ -1,3 +1,5 @@
+// Ports cmdk/test/item.test.ts under its own titles. Upstream's React toggles
+// are fixture buttons that append and remove the elements.
 import { expect, test } from "../test_helper.js"
 
 test.describe("item", () => {
@@ -5,7 +7,7 @@ test.describe("item", () => {
     await page.goto("/item.html")
   })
 
-  test("an item added while searching shows when it matches", async ({ page, cmdk }) => {
+  test("mounted item matches search", async ({ page, cmdk }) => {
     await cmdk.type("b")
     await expect(cmdk.items).toHaveCount(0)
 
@@ -14,7 +16,7 @@ test.describe("item", () => {
     await expect(cmdk.items).toHaveText("B")
   })
 
-  test("an item added while searching stays hidden when it does not match", async ({ page, cmdk }) => {
+  test("mounted item does not match search", async ({ page, cmdk }) => {
     await cmdk.type("z")
     await expect(cmdk.items).toHaveCount(0)
 
@@ -23,7 +25,7 @@ test.describe("item", () => {
     await expect(cmdk.items).toHaveCount(0)
   })
 
-  test("removing the selected item selects the first one left", async ({ page, cmdk }) => {
+  test("unmount item that is selected", async ({ page, cmdk }) => {
     await page.getByTestId("mount").click()
     await expect(cmdk.selected).toHaveText("A")
 
@@ -33,13 +35,13 @@ test.describe("item", () => {
     await expect(cmdk.selected).toHaveText("B")
   })
 
-  test("removing the only item leaves none", async ({ page, cmdk }) => {
+  test("unmount item that is the only result", async ({ page, cmdk }) => {
     await page.getByTestId("unmount").click()
 
     await expect(cmdk.items).toHaveCount(0)
   })
 
-  test("adding the only item hides the empty state", async ({ page, cmdk }) => {
+  test("mount item that is the only result", async ({ page, cmdk }) => {
     await page.getByTestId("unmount").click()
     await expect(cmdk.empty).toHaveCount(1)
 
@@ -49,17 +51,20 @@ test.describe("item", () => {
     await expect(cmdk.items).toHaveCount(1)
   })
 
-  test("adding items keeps the selection", async ({ page, cmdk }) => {
+  test("selected does not change when mounting new items", async ({ page, cmdk }) => {
     await page.getByTestId("mount").click()
     await cmdk.item("B").click()
     await expect(cmdk.selected).toHaveText("B")
+    const changes = await cmdk.events("change")
 
     await page.getByTestId("many").click()
 
+    await expect(cmdk.items).toHaveCount(5)
     await expect(cmdk.selected).toHaveText("B")
+    expect(await cmdk.events("change")).toEqual(changes)
   })
 
-  test("a force-mounted item shows regardless of the search", async ({ page, cmdk }) => {
+  test("mounted item still rendered with filter usingForceMount", async ({ page, cmdk }) => {
     await page.getByTestId("forceMount").click()
 
     await cmdk.type("z")
@@ -68,12 +73,12 @@ test.describe("item", () => {
   })
 })
 
-test.describe("item, advanced", () => {
+test.describe("item advanced", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/item-advanced.html")
   })
 
-  test("text that changes is matched again", async ({ page, cmdk }) => {
+  test("re-rendering re-matches implicit textContent value", async ({ page, cmdk }) => {
     await expect(cmdk.items).toHaveCount(2)
     await cmdk.type("2")
 

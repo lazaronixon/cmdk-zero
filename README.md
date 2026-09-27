@@ -397,8 +397,13 @@ npm run playground       # the fixture pages, as a live playground
 Tests come in two layers. **Vitest** (`test/unit/`) covers the pure logic and
 the elements' own contract in jsdom. **Playwright** (`test/browser/`) drives real
 browsers for everything that only a browser can tell you: typing, keyboard
-navigation, pointer selection, scrolling, dialogs and theming — including a port
-of every one of cmdk's own browser tests.
+navigation, pointer selection, scrolling, dialogs and theming.
+
+Every one of cmdk's own browser tests is ported under its original title and
+`describe` block, so the two suites can be compared line by line; the tests
+cmdk-zero adds live in `cmdk-zero` blocks beside them. The one upstream page
+without a counterpart is a list portalled out of the menu: items are found
+inside `<cmdk-root>`, so the list has to stay inside it too.
 
 ## Credits
 

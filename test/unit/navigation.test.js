@@ -47,6 +47,11 @@ describe("adjacentItem", () => {
     expect(adjacentItem(items, byValue.first, -1, { loop: true })).toBe(byValue.last)
   })
 
+  test("finds nothing to loop to in an empty list", () => {
+    expect(adjacentItem([], null, -1, { loop: true })).toBeNull()
+    expect(adjacentItem([], null, 1, { loop: true })).toBeNull()
+  })
+
   test("lands on the first item when nothing is selected", () => {
     const { items, byValue } = build()
 

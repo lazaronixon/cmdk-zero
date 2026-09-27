@@ -1,151 +1,150 @@
+// Ports cmdk/test/keybind.test.ts under its own titles; the tests cmdk-zero
+// adds on top of it live in the "cmdk-zero" blocks at the end.
 import { expect, test } from "../test_helper.js"
 
-// Every binding comes in three spellings; the moves are the same for each.
-const BINDINGS = [
-  { name: "arrow", next: "ArrowDown", previous: "ArrowUp" },
-  { name: "vim j/k", next: "Control+j", previous: "Control+k" },
-  { name: "vim n/p", next: "Control+n", previous: "Control+p" }
-]
+// Presses each key in turn and checks where the selection landed, starting
+// from the first selectable item.
+async function walk(cmdk, steps) {
+  await cmdk.expectSelected("first")
 
-BINDINGS.forEach(({ name, next, previous }) => {
-  test.describe(`${name} keybinds`, () => {
-    test.beforeEach(async ({ page, cmdk }) => {
-      await page.goto("/keybinds.html")
-      await cmdk.input.focus()
+  for (const [ key, value ] of steps) {
+    await cmdk.press(key)
+    await cmdk.expectSelected(value)
+  }
+}
+
+test.describe("arrow keybinds", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/keybinds.html")
+  })
+
+  test("arrow up/down changes selected item", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "ArrowDown", "A" ], [ "ArrowUp", "first" ] ])
+  })
+
+  test("meta arrow up/down goes to first and last item", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "Meta+ArrowDown", "last" ], [ "Meta+ArrowUp", "first" ] ])
+  })
+
+  test("alt arrow up/down goes to next and prev item", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "Alt+ArrowDown", "A" ], [ "Alt+ArrowDown", "Apple" ], [ "Alt+ArrowUp", "A" ], [ "Alt+ArrowUp", "first" ] ])
+  })
+})
+
+test.describe("vim jk keybinds", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/keybinds.html")
+  })
+
+  test("ctrl j/k changes selected item", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "Control+j", "A" ], [ "Control+k", "first" ] ])
+  })
+
+  test("meta ctrl j/k goes to first and last item", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "Meta+Control+j", "last" ], [ "Meta+Control+k", "first" ] ])
+  })
+
+  test("alt ctrl j/k goes to next and prev item", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "Alt+Control+j", "A" ], [ "Alt+Control+j", "Apple" ], [ "Alt+Control+k", "A" ], [ "Alt+Control+k", "first" ] ])
+  })
+})
+
+test.describe("vim np keybinds", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/keybinds.html")
+  })
+
+  test("ctrl n/p changes selected item", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "Control+n", "A" ], [ "Control+p", "first" ] ])
+  })
+
+  test("meta ctrl n/p goes to first and last item", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "Meta+Control+n", "last" ], [ "Meta+Control+p", "first" ] ])
+  })
+
+  test("alt ctrl n/p goes to next and prev item", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "Alt+Control+n", "A" ], [ "Alt+Control+n", "Apple" ], [ "Alt+Control+p", "A" ], [ "Alt+Control+p", "first" ] ])
+  })
+})
+
+test.describe("no-vim keybinds", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/keybinds.html?noVim=true")
+  })
+
+  test("ctrl j/k does nothing", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "Control+j", "first" ], [ "Control+k", "first" ] ])
+  })
+
+  test("ctrl n/p does nothing", async ({ cmdk }) => {
+    await walk(cmdk, [ [ "Control+n", "first" ], [ "Control+p", "first" ] ])
+  })
+})
+
+test.describe("cmdk-zero", () => {
+  test.describe("scrolling", () => {
+    // The playground's third menu sits below the fold of a 600px viewport.
+    test("loading a page never scrolls it to a menu below the fold", async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 600 })
+      await page.goto("/index.html")
+
+      await expect(page.locator("cmdk-root").nth(2).locator("cmdk-item[data-selected]")).toHaveCount(1)
+      expect(await page.evaluate(() => scrollY)).toBe(0)
     })
 
-    test("steps through the items, skipping disabled ones", async ({ cmdk }) => {
-      await cmdk.expectSelected("first")
+    test("an initial value far down the list is scrolled into the list's view", async ({ page, cmdk }) => {
+      await page.goto("/keybinds.html?initialValue=last")
 
-      await cmdk.press(next)
-      await cmdk.expectSelected("A")
-
-      await cmdk.press(previous)
-      await cmdk.expectSelected("first")
-    })
-
-    test("with Meta, jumps to the first and last item", async ({ cmdk }) => {
-      await cmdk.expectSelected("first")
-
-      await cmdk.press(`Meta+${next}`)
       await cmdk.expectSelected("last")
-
-      await cmdk.press(`Meta+${previous}`)
-      await cmdk.expectSelected("first")
+      await expect(cmdk.selected).toBeInViewport({ ratio: 1 })
     })
 
-    test("with Alt, jumps between groups", async ({ cmdk }) => {
-      await cmdk.expectSelected("first")
+    test("keeps the selected item scrolled into view", async ({ page, cmdk }) => {
+      await page.goto("/keybinds.html")
 
-      await cmdk.press(`Alt+${next}`)
-      await cmdk.expectSelected("A")
+      await cmdk.press("End")
 
-      await cmdk.press(`Alt+${next}`)
-      await cmdk.expectSelected("Apple")
+      await expect(cmdk.selected).toBeInViewport()
+    })
 
-      await cmdk.press(`Alt+${previous}`)
-      await cmdk.expectSelected("A")
+    test("keeps the selected item in view when the list shrinks", async ({ page, cmdk }) => {
+      await page.goto("/keybinds.html")
+      await cmdk.press("End")
+      await expect(cmdk.selected).toBeInViewport()
 
-      await cmdk.press(`Alt+${previous}`)
-      await cmdk.expectSelected("first")
+      await cmdk.element.evaluate(root => root.style.setProperty("--cmdk-list-height-limit", "8rem"))
+
+      await expect.poll(() => cmdk.list.evaluate(list => list.clientHeight)).toBeLessThan(140)
+      await expect(cmdk.selected).toBeInViewport({ ratio: 1 })
     })
   })
-})
 
-test.describe("without vim bindings", () => {
-  test.beforeEach(async ({ page, cmdk }) => {
-    await page.goto("/keybinds.html?noVim")
-    await cmdk.input.focus()
-  })
+  test.describe("edges", () => {
+    test("Home and End jump to the first and last item", async ({ page, cmdk }) => {
+      await page.goto("/keybinds.html")
 
-  test("Ctrl+J/K does nothing", async ({ cmdk }) => {
-    await cmdk.expectSelected("first")
+      await walk(cmdk, [ [ "End", "last" ], [ "Home", "first" ] ])
+    })
 
-    await cmdk.press("Control+j")
-    await cmdk.expectSelected("first")
+    test("stops at the ends without loop", async ({ page, cmdk }) => {
+      await page.goto("/keybinds.html")
 
-    await cmdk.press("Control+k")
-    await cmdk.expectSelected("first")
-  })
+      await walk(cmdk, [ [ "ArrowUp", "first" ], [ "End", "last" ], [ "ArrowDown", "last" ] ])
+    })
 
-  test("Ctrl+N/P does nothing", async ({ cmdk }) => {
-    await cmdk.expectSelected("first")
+    test("wraps around with loop", async ({ page, cmdk }) => {
+      await page.goto("/keybinds.html?loop")
 
-    await cmdk.press("Control+n")
-    await cmdk.expectSelected("first")
+      await walk(cmdk, [ [ "ArrowUp", "last" ], [ "ArrowDown", "first" ] ])
+    })
 
-    await cmdk.press("Control+p")
-    await cmdk.expectSelected("first")
-  })
-})
+    test("Enter chooses the selected item", async ({ page, cmdk }) => {
+      await page.goto("/keybinds.html")
 
-test.describe("scrolling", () => {
-  // The playground's third menu sits below the fold of a 900px viewport.
-  test("loading a page never scrolls it to a menu below the fold", async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 600 })
-    await page.goto("/index.html")
+      await cmdk.press("ArrowDown")
+      await cmdk.press("Enter")
 
-    await expect(page.locator("cmdk-root").nth(2).locator("cmdk-item[data-selected]")).toHaveCount(1)
-    expect(await page.evaluate(() => scrollY)).toBe(0)
-  })
-
-  test("an initial value far down the list is scrolled into the list's view", async ({ page, cmdk }) => {
-    await page.goto("/keybinds.html?initialValue=last")
-
-    await cmdk.expectSelected("last")
-    await expect(cmdk.selected).toBeInViewport({ ratio: 1 })
-  })
-})
-
-test.describe("edges", () => {
-  test("Home and End jump to the first and last item", async ({ page, cmdk }) => {
-    await page.goto("/keybinds.html")
-    await cmdk.input.focus()
-
-    await cmdk.press("End")
-    await cmdk.expectSelected("last")
-
-    await cmdk.press("Home")
-    await cmdk.expectSelected("first")
-  })
-
-  test("stops at the ends without loop", async ({ page, cmdk }) => {
-    await page.goto("/keybinds.html")
-    await cmdk.input.focus()
-
-    await cmdk.press("ArrowUp")
-    await cmdk.expectSelected("first")
-  })
-
-  test("wraps around with loop", async ({ page, cmdk }) => {
-    await page.goto("/keybinds.html?loop")
-    await cmdk.input.focus()
-
-    await cmdk.press("ArrowUp")
-    await cmdk.expectSelected("last")
-
-    await cmdk.press("ArrowDown")
-    await cmdk.expectSelected("first")
-  })
-
-  test("keeps the selected item scrolled into view", async ({ page, cmdk }) => {
-    await page.goto("/keybinds.html")
-    await cmdk.input.focus()
-
-    await cmdk.press("End")
-
-    await expect(cmdk.selected).toBeInViewport()
-  })
-
-  test("keeps the selected item in view when the list shrinks", async ({ page, cmdk }) => {
-    await page.goto("/keybinds.html")
-    await cmdk.input.focus()
-    await cmdk.press("End")
-    await expect(cmdk.selected).toBeInViewport()
-
-    await cmdk.element.evaluate(root => root.style.setProperty("--cmdk-list-height-limit", "8rem"))
-
-    await expect.poll(() => cmdk.list.evaluate(list => list.clientHeight)).toBeLessThan(140)
-    await expect(cmdk.selected).toBeInViewport({ ratio: 1 })
+      await cmdk.expectEvents("select", [ "A" ])
+    })
   })
 })

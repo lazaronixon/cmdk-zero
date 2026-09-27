@@ -178,6 +178,14 @@ describe("rendering", () => {
     expect(document.head.firstElementChild).toBe(styles[0])
   })
 
+  test("puts the nonce on the machinery styles, for CSP", () => {
+    document.getElementById("cmdk-zero-style")?.remove()
+
+    mount("<cmdk-root nonce=\"abc123\"><cmdk-list></cmdk-list></cmdk-root>")
+
+    expect(document.getElementById("cmdk-zero-style").getAttribute("nonce")).toBe("abc123")
+  })
+
   test("defining the elements again is harmless", () => {
     expect(() => defineElements()).not.toThrow()
   })
@@ -807,6 +815,153 @@ describe("properties", () => {
     expect(separator.hasAttribute("always-render")).toBe(true)
     expect(group.hasAttribute("force-mount")).toBe(true)
     expect(group.value).toBe("grouped")
+  })
+
+  test("the separator reports always-render", () => {
+    const separator = document.createElement("cmdk-separator")
+    expect(separator.alwaysRender).toBe(false)
+
+    separator.setAttribute("always-render", "")
+
+    expect(separator.alwaysRender).toBe(true)
+  })
+
+  test("an item's keywords can be cleared", () => {
+    const root = mount(BASIC)
+    const item = root.querySelector("cmdk-item")
+
+    item.keywords = null
+
+    expect(item.keywords).toEqual([])
+  })
+
+  test("a group with neither a heading nor a value has an empty value", () => {
+    const group = document.createElement("cmdk-group")
+
+    expect(group.value).toBe("")
+  })
+
+  test("a disconnected group ignores heading changes until it connects", () => {
+    const group = document.createElement("cmdk-group")
+
+    group.setAttribute("heading", "Later")
+    expect(group.heading).toBeNull()
+
+    document.body.append(group)
+    expect(group.heading.textContent).toBe("Later")
+  })
+
+  test("removing a group's heading attribute keeps the heading, unlabelled no more", () => {
+    const root = mount(GROUPS)
+    const group = root.querySelector("cmdk-group")
+
+    group.removeAttribute("heading")
+
+    expect(group.heading.textContent).toBe("Letters")
+    expect(group.getAttribute("aria-labelledby")).toBe(group.heading.id)
+  })
+
+  test("loading progress that is not a number is left unannounced", () => {
+    const root = mount("<cmdk-root><cmdk-loading progress=\"soon\"></cmdk-loading></cmdk-root>")
+
+    expect(root.querySelector("cmdk-loading").hasAttribute("aria-valuenow")).toBe(false)
+  })
+
+  test("follows a change to its label", () => {
+    const root = mount(BASIC)
+
+    root.setAttribute("label", "Jump to")
+
+    expect(root.input.getAttribute("aria-label")).toBe("Jump to")
+  })
+
+  test("focus() focuses the menu itself when there is no input", () => {
+    const root = mount(GROUPS.replace("<input>", ""))
+
+    root.focus()
+
+    expect(document.activeElement).toBe(root)
+  })
+
+  test("reads the value attribute before it upgrades", () => {
+    const root = document.createElement("cmdk-root")
+    root.setAttribute("value", "  padded ")
+
+    expect(root.value).toBe("padded")
+  })
+
+  test("treats null as empty for value and search", () => {
+    const root = mount(BASIC)
+
+    root.search = "x"
+    root.search = null
+    expect(root.search).toBe("")
+    expect(root.input.value).toBe("")
+
+    root.value = null
+    expect(root.value).toBe("")
+    expect(selectedValue(root)).toBeNull()
+  })
+
+  test("removing the value attribute clears the selection", () => {
+    const root = mount(BASIC.replace("<cmdk-root", "<cmdk-root value=\"xxx\""))
+
+    root.removeAttribute("value")
+
+    expect(root.value).toBe("")
+  })
+
+  test("a filter that is not a function falls back to the default", () => {
+    const root = mount(BASIC)
+    root.filter = "nope"
+
+    type(root, "x")
+
+    expect(root.filter).toBeNull()
+    expect(visibleValues(root)).toEqual([ "xxx" ])
+  })
+
+  test("setting the same search again does nothing", () => {
+    const root = mount(BASIC)
+    type(root, "x")
+    const searches = recordEvents(root, "cmdk:search")
+
+    root.search = "x"
+
+    expect(searches).toEqual([])
+  })
+
+  test("a menu without an input ignores a label change", () => {
+    const root = mount(GROUPS.replace("<input>", ""))
+
+    expect(() => root.setAttribute("label", "Menu")).not.toThrow()
+  })
+
+  test("hands focus from the menu to the list when there is no input", () => {
+    const root = mount(GROUPS.replace("<input>", ""))
+    root.focus()
+
+    press(root, "ArrowDown")
+
+    expect(document.activeElement).toBe(root.list)
+  })
+
+  test("a menu without a list still selects, with nothing to scroll", () => {
+    const root = mount("<cmdk-root value=\"B\"><input><cmdk-item>A</cmdk-item><cmdk-item>B</cmdk-item></cmdk-root>")
+
+    root.value = "A"
+
+    expect(selectedValue(root)).toBe("A")
+  })
+
+  test("a key with nothing to select changes nothing", () => {
+    const root = mount("<cmdk-root><input><cmdk-list><cmdk-item disabled>Only</cmdk-item></cmdk-list></cmdk-root>")
+
+    press(root, "ArrowDown")
+    press(root, "End")
+    press(root, "Enter")
+
+    expect(root.value).toBe("")
   })
 
   test("exposes the list and the selected item", () => {

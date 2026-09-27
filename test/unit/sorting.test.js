@@ -48,7 +48,42 @@ describe("sortItems", () => {
   })
 })
 
+describe("sortItems, at the edges", () => {
+  test("ranks an unscored item last and skips one outside any container", () => {
+    document.body.innerHTML = `
+      <cmdk-list-sizer>
+        <cmdk-item value="unscored"></cmdk-item>
+        <cmdk-item value="scored"></cmdk-item>
+      </cmdk-list-sizer>
+      <cmdk-item value="loose"></cmdk-item>
+    `
+
+    const [ unscored, scored, loose ] = document.querySelectorAll("cmdk-item")
+    sortItems([ unscored, scored, loose ], new Map([ [ scored, 0.5 ] ]))
+
+    expect(order("cmdk-list-sizer > cmdk-item")).toEqual([ "scored", "unscored" ])
+    expect(document.body.lastElementChild).toBe(loose)
+  })
+})
+
 describe("sortGroups", () => {
+  test("gives a group with no scored items a best score of 0, and skips a detached one", () => {
+    document.body.innerHTML = `
+      <cmdk-list-sizer>
+        <cmdk-group value="empty"><cmdk-item value="a"></cmdk-item></cmdk-group>
+        <cmdk-group value="scored"><cmdk-item value="b"></cmdk-item></cmdk-group>
+      </cmdk-list-sizer>
+    `
+
+    const [ empty, scored ] = document.querySelectorAll("cmdk-group")
+    const detached = document.createElement("cmdk-group")
+    const b = scored.querySelector("cmdk-item")
+
+    sortGroups([ empty, scored, detached ], new Map([ [ b, 0.4 ] ]), group => Array.from(group.querySelectorAll("cmdk-item")))
+
+    expect(order("cmdk-list-sizer > cmdk-group")).toEqual([ "scored", "empty" ])
+  })
+
   test("orders groups by their best item and puts them after loose items", () => {
     document.body.innerHTML = `
       <cmdk-list-sizer>

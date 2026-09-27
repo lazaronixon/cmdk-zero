@@ -32,8 +32,8 @@ describe("resolveKeyAction", () => {
     expect(resolveKeyAction(key(name, { ctrlKey: true, altKey: true }))).toBe("previous-group")
   })
 
-  test("vim letters without Ctrl are just typing", () => {
-    expect(resolveKeyAction(key("j"))).toBeNull()
+  test.each([ "j", "k", "n", "p" ])("%s without Ctrl is just typing", name => {
+    expect(resolveKeyAction(key(name))).toBeNull()
   })
 
   test("vim bindings can be turned off", () => {

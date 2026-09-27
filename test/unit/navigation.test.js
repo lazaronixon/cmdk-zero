@@ -88,26 +88,47 @@ describe("adjacentGroupItem", () => {
 
 describe("scrollItemIntoView", () => {
   test("brings the heading in first for the first item of a group", () => {
-    const { items, byValue } = build()
+    const { byValue } = build()
 
-    scrollItemIntoView(byValue.a, items)
+    scrollItemIntoView(byValue.a)
 
     expect(scrolled).toEqual([ document.querySelector("cmdk-group-heading"), byValue.a ])
   })
 
   test("scrolls only the item otherwise", () => {
-    const { items, byValue } = build()
+    const { byValue } = build()
 
-    scrollItemIntoView(byValue.b, items)
+    scrollItemIntoView(byValue.b)
+
+    expect(scrolled).toEqual([ byValue.b ])
+  })
+
+  // cmdk's check: the first item the group renders. A search unmounts what it
+  // filters out there, and hides it here, so a hidden item does not count.
+  test("counts the first item the search left, not a hidden one", () => {
+    const { byValue } = build()
+    byValue.a.hidden = true
+
+    scrollItemIntoView(byValue.b)
+
+    expect(scrolled).toEqual([ document.querySelector("cmdk-group-heading"), byValue.b ])
+  })
+
+  // A disabled item is still rendered, so it stays the first one, as in cmdk.
+  test("still counts a disabled first item as the first", () => {
+    const { byValue } = build()
+    byValue.a.setAttribute("disabled", "")
+
+    scrollItemIntoView(byValue.b)
 
     expect(scrolled).toEqual([ byValue.b ])
   })
 
   test("scrolls only the container when given one", () => {
-    const { items, byValue } = build()
+    const { byValue } = build()
     const container = document.querySelector("div")
 
-    scrollItemIntoView(byValue.a, items, { container })
+    scrollItemIntoView(byValue.a, { container })
 
     expect(scrolled).toEqual([])
   })

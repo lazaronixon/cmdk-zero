@@ -352,7 +352,7 @@ On `<cmdk-root>`:
 | | |
 | --- | --- |
 | `focus()`, `blur()` | focus or blur the search field, or the menu when it has none |
-| `selectFirst()` | selects the first item that is visible and not disabled, scrolling only the list; fires `cmdk:change` when the selection moves |
+| `reset()` | back to how the markup left it, like `form.reset()`: clears the search, puts the items back in the order you wrote, scrolls the list to its top and selects the `value` attribute's item — or the first one, as on load. Only the list scrolls, never the page. Fires `cmdk:search` and `cmdk:change` for what actually changed |
 
 ### Events
 

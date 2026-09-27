@@ -322,27 +322,43 @@ describe("selection", () => {
     expect(root.getAttribute("value")).toBe("xxx")
   })
 
-  test("selects the first selectable item with selectFirst(), skipping disabled ones", () => {
+  test("reset() clears the search and selects the first selectable item, skipping disabled ones", () => {
     const root = mount(GROUPS)
-    root.value = "Pear"
+    type(root, "pear")
+    scrolled.length = 0
+    const searches = recordEvents(root, "cmdk:search")
     const changes = recordEvents(root, "cmdk:change")
 
-    root.selectFirst()
+    root.reset()
 
+    expect(root.search).toBe("")
+    expect(root.input.value).toBe("")
+    expect(visibleValues(root)).toContain("Apple")
     expect(selectedValue(root)).toBe("first")
+    expect(searches).toEqual([ { search: "" } ])
     expect(changes).toEqual([ { value: "first" } ])
     expect(scrolled).toEqual([])
   })
 
-  test("selectFirst() skips items the search hid", () => {
-    const root = mount(GROUPS)
-    type(root, "pear")
-    root.value = "last"
+  test("reset() goes back to the value attribute, in one cmdk:change", () => {
+    const root = mount(GROUPS.replace("<cmdk-root>", "<cmdk-root value=\"Pear\">"))
+    type(root, "z")
+    expect(selectedValue(root)).toBe("Z")
+    const changes = recordEvents(root, "cmdk:change")
 
-    root.selectFirst()
+    root.reset()
 
-    expect(visibleValues(root)).toEqual([ "Pear" ])
     expect(selectedValue(root)).toBe("Pear")
+    expect(changes).toEqual([ { value: "Pear" } ])
+  })
+
+  test("reset() scrolls the list back to its top", () => {
+    const root = mount(GROUPS)
+    root.list.scrollTop = 120
+
+    root.reset()
+
+    expect(root.list.scrollTop).toBe(0)
   })
 
   test("does not fire cmdk:change when the value stays the same", () => {

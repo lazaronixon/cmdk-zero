@@ -2,6 +2,7 @@ import { findNextSibling, findPreviousSibling } from "../helpers/dom_helper"
 
 const GROUP_TAG = "cmdk-group"
 const HEADING_TAG = "cmdk-group-heading"
+const ITEM_TAG = "cmdk-item"
 
 // The item one step away from `current` among `items`, which are in DOM order.
 // With nothing selected, stepping forward lands on the first item.
@@ -32,15 +33,16 @@ export function adjacentGroupItem(items, current, change, options) {
 }
 
 // The first item of a group would otherwise scroll in with its heading cut off
-// above it.
+// above it. "First" is cmdk's check: the first item the group renders, disabled
+// or not. cmdk unmounts the items a search filters out; here they are hidden.
 //
 // With a `container`, only that box scrolls. That is for a selection the menu
 // made on its own — on load, or as items come and go — which must not drag the
 // page to a menu below the fold. A selection the user moved scrolls whatever it
 // takes, the way `scrollIntoView` does.
-export function scrollItemIntoView(item, items, { container = null } = {}) {
+export function scrollItemIntoView(item, { container = null } = {}) {
   const group = item.closest(GROUP_TAG)
-  const isFirstInGroup = group && items.find(candidate => group.contains(candidate)) === item
+  const isFirstInGroup = group?.querySelector(`${ITEM_TAG}:not([hidden])`) === item
   const targets = [ isFirstInGroup ? group.querySelector(HEADING_TAG) : null, item ].filter(Boolean)
 
   targets.forEach(target => {

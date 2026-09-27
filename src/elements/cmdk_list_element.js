@@ -89,9 +89,6 @@ export default class CmdkListElement extends HTMLElement {
   // from nothing — a dialog opening — does not settle with the heading cut off.
   #keepSelectionInView() {
     const item = this.querySelector("cmdk-item[data-selected]:not([hidden])")
-    if (!item) return
-
-    const items = Array.from(this.querySelectorAll("cmdk-item:not([hidden], [disabled])"))
-    scrollItemIntoView(item, items, { container: this })
+    if (item) scrollItemIntoView(item, { container: this })
   }
 }

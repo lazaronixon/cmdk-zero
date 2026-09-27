@@ -190,10 +190,25 @@ export default class CmdkRootElement extends HTMLElement {
     super.blur()
   }
 
-  // The first item the keyboard could land on, the way the menu picks one on
-  // load. Chosen from code, so only the list scrolls to it, never the page.
-  selectFirst() {
-    this.#selectFirstItem({ scroll: SCROLL_LIST })
+  // Back to how the markup left it, the way `form.reset()` is: no search, the
+  // items in the order you wrote, the list at its top, and the selection on
+  // the `value` attribute — or the first item, as on load. Called from code, so
+  // only the list scrolls, never the page.
+  reset() {
+    if (this.#input) this.#input.value = ""
+    this.#setSearch("", { selectFirst: false })
+
+    if (this.list) this.list.scrollTop = 0
+
+    const value = (this.getAttribute("value") ?? "").trim()
+    if (value) {
+      this.#select(value, { scroll: SCROLL_NONE })
+    } else {
+      this.#selectFirstItem({ scroll: SCROLL_NONE })
+    }
+
+    // Even when the selection did not move, the list just went back to its top.
+    this.#scrollSelectedIntoView(SCROLL_LIST)
   }
 
   #upgradeProperties() {
@@ -321,14 +336,14 @@ export default class CmdkRootElement extends HTMLElement {
     item.dispatchEvent(new CustomEvent("cmdk:select", { detail: { value: item.value }, bubbles: true }))
   }
 
-  #setSearch(search) {
+  #setSearch(search, { selectFirst = true } = {}) {
     if (search === this.#search) return
     this.#search = search
     if (!this.#upgraded) return
 
     this.#refresh()
     this.dispatchEvent(new CustomEvent("cmdk:search", { detail: { search }, bubbles: true }))
-    this.#selectFirstItem()
+    if (selectFirst) this.#selectFirstItem()
   }
 
   // A change the menu did not make itself: items added, removed or rewritten,
@@ -455,7 +470,7 @@ export default class CmdkRootElement extends HTMLElement {
     const container = scroll === SCROLL_LIST ? this.list : null
     if (scroll === SCROLL_LIST && !container) return
 
-    scrollItemIntoView(this.#selectedItem, this.#selectableItems(), { container })
+    scrollItemIntoView(this.#selectedItem, { container })
   }
 
   #items() {

@@ -1,0 +1,67 @@
+{
+  "name": "cmdk-zero",
+  "version": "0.0.1",
+  "description": "cmdk-zero - Fast, composable, unstyled command menu. A zero-dependency command menu custom element, themed with CSS variables.",
+  "module": "dist/cmdk-zero.esm.js",
+  "type": "module",
+  "exports": {
+    ".": "./dist/cmdk-zero.esm.js",
+    "./styles": "./dist/cmdk-zero.css",
+    "./cmdk-zero.css": "./dist/cmdk-zero.css",
+    "./dist/cmdk-zero.css": "./dist/cmdk-zero.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": "https://github.com/lazaronixon/cmdk-zero.git",
+  "license": "MIT",
+  "keywords": [
+    "cmdk",
+    "command-menu",
+    "command-palette",
+    "combobox",
+    "custom-element",
+    "web-component",
+    "vanilla",
+    "accessible"
+  ],
+  "browserslist": [
+    "baseline 2023",
+    "not dead"
+  ],
+  "devDependencies": {
+    "@eslint/css": "^1.2.0",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.52.0",
+    "@rollup/plugin-terser": "^1.0.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "eslint": "^10.3.0",
+    "eslint-plugin-compat": "^7.0.2",
+    "globals": "^17.6.0",
+    "jsdom": "^30.0.1",
+    "rollup": "^4.44.1",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-gzip": "^4.1.1",
+    "vite": "^8.2.1",
+    "vitest": "^4.0.16"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -wc",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "test:browser": "npx playwright test --config test/browser/playwright.config.js",
+    "test:browser:chromium": "npx playwright test --config test/browser/playwright.config.js --project=chromium",
+    "test:browser:firefox": "npx playwright test --config test/browser/playwright.config.js --project=firefox",
+    "test:browser:webkit": "npx playwright test --config test/browser/playwright.config.js --project=webkit",
+    "test:browser:headed": "npx playwright test --config test/browser/playwright.config.js --headed",
+    "test:browser:debug": "npx playwright test --config test/browser/playwright.config.js --debug",
+    "playground": "vite --config test/browser/vite.config.js",
+    "prerelease": "yarn build",
+    "release": "yarn build && yarn publish",
+    "release:alpha": "yarn build && yarn publish --tag alpha"
+  }
+}

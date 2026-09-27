@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>cmdk-zero — props</title>
+    <link rel="stylesheet" href="/cmdk-zero.css">
+    <script type="module" src="/setup.js"></script>
+  </head>
+  <body>
+    <div data-testid="value"></div>
+    <div data-testid="search"></div>
+
+    <button data-testid="controlledValue">Change value</button>
+    <button data-testid="controlledSearch">Change search value</button>
+
+    <cmdk-root value="ant">
+      <input placeholder="Search…">
+      <cmdk-list>
+        <cmdk-item>ant</cmdk-item>
+        <cmdk-item>anteater</cmdk-item>
+      </cmdk-list>
+    </cmdk-root>
+
+    <!-- Classic, so it runs while parsing: before the module defines the
+         elements, exactly like attributes written in the markup. -->
+    <script>
+      const params = new URLSearchParams(location.search)
+      const root = document.querySelector("cmdk-root")
+
+      if (params.get("shouldFilter") === "false") root.setAttribute("should-filter", "false")
+      if (params.has("initialValue")) root.setAttribute("value", params.get("initialValue"))
+
+      if (params.get("customFilter") === "true") {
+        root.filter = (item, search) => {
+          if (!search || !item) return 1
+          return item.endsWith(search) ? 1 : 0
+        }
+      }
+    </script>
+
+    <script type="module">
+      const root = document.querySelector("cmdk-root")
+      const valueOutput = document.querySelector("[data-testid=value]")
+      const searchOutput = document.querySelector("[data-testid=search]")
+
+      valueOutput.textContent = root.value
+      root.addEventListener("cmdk:change", event => { valueOutput.textContent = event.detail.value })
+      root.addEventListener("cmdk:search", event => { searchOutput.textContent = event.detail.search })
+
+      document.querySelector("[data-testid=controlledValue]").addEventListener("click", () => {
+        root.value = "anteater"
+      })
+
+      document.querySelector("[data-testid=controlledSearch]").addEventListener("click", () => {
+        root.search = "eat"
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>cmdk-zero — keybinds</title>
+    <link rel="stylesheet" href="/cmdk-zero.css">
+    <script type="module" src="/setup.js"></script>
+  </head>
+  <body>
+    <cmdk-root>
+      <input>
+      <cmdk-list>
+        <cmdk-empty>No results.</cmdk-empty>
+
+        <cmdk-item value="disabled" disabled>Disabled</cmdk-item>
+
+        <cmdk-item value="first">First</cmdk-item>
+
+        <cmdk-group heading="Letters">
+          <cmdk-item>A</cmdk-item>
+          <cmdk-item>B</cmdk-item>
+          <cmdk-item>Z</cmdk-item>
+        </cmdk-group>
+
+        <cmdk-group heading="Fruits">
+          <cmdk-item>Apple</cmdk-item>
+          <cmdk-item>Banana</cmdk-item>
+          <cmdk-item>Orange</cmdk-item>
+          <cmdk-item disabled>Dragon Fruit</cmdk-item>
+          <cmdk-item>Pear</cmdk-item>
+        </cmdk-group>
+
+        <cmdk-item value="last">Last</cmdk-item>
+
+        <cmdk-item value="disabled-3" disabled>Disabled 3</cmdk-item>
+      </cmdk-list>
+    </cmdk-root>
+
+    <script>
+      const params = new URLSearchParams(location.search)
+      const root = document.querySelector("cmdk-root")
+
+      if (params.has("noVim")) root.setAttribute("vim-bindings", "false")
+      if (params.has("loop")) root.setAttribute("loop", "")
+    </script>
+  </body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>cmdk-zero — playground</title>
+    <link rel="stylesheet" href="/cmdk-zero.css">
+    <script type="module" src="/setup.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 3rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        align-items: center;
+        font-family: system-ui, sans-serif;
+        color: #18181b;
+        background: #fafafa;
+      }
+
+      section { width: 100%; max-width: 40rem; }
+      h2 { margin: 0 0 0.75rem; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; }
+      kbd { margin-left: auto; padding: 0.125rem 0.375rem; font: inherit; font-size: 0.75rem; color: #71717a; background: #f4f4f5; border-radius: 0.25rem; }
+
+      /* Raycast-like, from variables alone. */
+      .raycast {
+        --cmdk-radius: 0.75rem;
+        --cmdk-background: rgb(255 255 255 / 0.9);
+        --cmdk-border-color: #d4d4d8;
+        --cmdk-input-font-size: 1rem;
+        --cmdk-input-padding: 0.25rem 0.5rem 0.75rem;
+        --cmdk-item-height: 2.5rem;
+        --cmdk-item-spacing: 0;
+        --cmdk-item-radius: 0.5rem;
+        --cmdk-item-selected-background: #e4e4e7;
+        --cmdk-heading-spacing: 0.25rem;
+      }
+
+      /* Linear-like: flat, dense and purple. */
+      .linear {
+        --cmdk-padding: 0;
+        --cmdk-radius: 0.5rem;
+        --cmdk-shadow: 0 16px 70px rgb(0 0 0 / 0.12);
+        --cmdk-input-padding: 1.25rem 1.25rem;
+        --cmdk-input-gap: 0;
+        --cmdk-item-height: 3rem;
+        --cmdk-item-spacing: 0;
+        --cmdk-item-radius: 0;
+        --cmdk-item-padding: 0 1.25rem;
+        --cmdk-item-selected-background: #f4f3ff;
+        --cmdk-item-selected-color: #5e5ce6;
+        --cmdk-heading-padding: 0.5rem 1.25rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h2>Default</h2>
+      <cmdk-root label="Command Menu">
+        <input placeholder="Type a command or search…">
+        <cmdk-list>
+          <cmdk-empty>No results found.</cmdk-empty>
+          <cmdk-group heading="Suggestions">
+            <cmdk-item>Linear <kbd>L</kbd></cmdk-item>
+            <cmdk-item>Figma <kbd>F</kbd></cmdk-item>
+            <cmdk-item>Slack <kbd>S</kbd></cmdk-item>
+          </cmdk-group>
+          <cmdk-separator></cmdk-separator>
+          <cmdk-group heading="Settings">
+            <cmdk-item keywords="theme, appearance">Change theme…</cmdk-item>
+            <cmdk-item keywords="profile">Account</cmdk-item>
+            <cmdk-item disabled>Billing</cmdk-item>
+          </cmdk-group>
+        </cmdk-list>
+      </cmdk-root>
+    </section>
+
+    <section>
+      <h2>Raycast-style</h2>
+      <div class="raycast">
+        <cmdk-root label="Raycast" loop>
+          <input placeholder="Search for apps and commands…">
+          <cmdk-list>
+            <cmdk-empty>No results found.</cmdk-empty>
+            <cmdk-group heading="Applications">
+              <cmdk-item>Calendar</cmdk-item>
+              <cmdk-item>Finder</cmdk-item>
+              <cmdk-item>Terminal</cmdk-item>
+            </cmdk-group>
+            <cmdk-group heading="Commands">
+              <cmdk-item>Clipboard History</cmdk-item>
+              <cmdk-item>Import Extension</cmdk-item>
+              <cmdk-item>Manage Extensions</cmdk-item>
+            </cmdk-group>
+          </cmdk-list>
+        </cmdk-root>
+      </div>
+    </section>
+
+    <section>
+      <h2>Linear-style</h2>
+      <div class="linear">
+        <cmdk-root label="Linear">
+          <input placeholder="Type a command or search…">
+          <cmdk-list>
+            <cmdk-empty>No results found.</cmdk-empty>
+            <cmdk-item>Assign to… <kbd>A</kbd></cmdk-item>
+            <cmdk-item>Assign to me <kbd>I</kbd></cmdk-item>
+            <cmdk-item>Change status… <kbd>S</kbd></cmdk-item>
+            <cmdk-item>Change priority… <kbd>P</kbd></cmdk-item>
+            <cmdk-item>Change labels… <kbd>L</kbd></cmdk-item>
+          </cmdk-list>
+        </cmdk-root>
+      </div>
+    </section>
+
+    <section>
+      <h2>Dialog</h2>
+      <p>Press <kbd>⌘K</kbd> or <kbd>Ctrl K</kbd>.</p>
+      <dialog id="menu">
+        <cmdk-root label="Global Command Menu">
+          <input placeholder="Search…" autofocus>
+          <cmdk-list>
+            <cmdk-empty>No results found.</cmdk-empty>
+            <cmdk-group heading="Letters">
+              <cmdk-item>a</cmdk-item>
+              <cmdk-item>b</cmdk-item>
+              <cmdk-separator></cmdk-separator>
+              <cmdk-item>c</cmdk-item>
+            </cmdk-group>
+            <cmdk-item>Apple</cmdk-item>
+          </cmdk-list>
+        </cmdk-root>
+      </dialog>
+    </section>
+
+    <script type="module">
+      const dialog = document.getElementById("menu")
+
+      document.addEventListener("keydown", event => {
+        if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
+          event.preventDefault()
+          dialog.open ? dialog.close() : dialog.showModal()
+        }
+      })
+
+      dialog.addEventListener("cmdk:select", () => dialog.close())
+    </script>
+  </body>
+</html>

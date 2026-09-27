@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>cmdk-zero — group</title>
+    <link rel="stylesheet" href="/cmdk-zero.css">
+    <script type="module" src="/setup.js"></script>
+  </head>
+  <body>
+    <button data-testid="forceMount">Force mount Group Letters</button>
+
+    <cmdk-root>
+      <input placeholder="Search…">
+      <cmdk-list>
+        <cmdk-empty>No results.</cmdk-empty>
+
+        <cmdk-group heading="Animals">
+          <cmdk-item>Giraffe</cmdk-item>
+          <cmdk-item>Chicken</cmdk-item>
+        </cmdk-group>
+
+        <cmdk-group heading="Letters" id="letters">
+          <cmdk-item>A</cmdk-item>
+          <cmdk-item>B</cmdk-item>
+          <cmdk-item>Z</cmdk-item>
+        </cmdk-group>
+      </cmdk-list>
+    </cmdk-root>
+
+    <template id="numbers">
+      <cmdk-group heading="Numbers">
+        <cmdk-item>One</cmdk-item>
+        <cmdk-item>Two</cmdk-item>
+        <cmdk-item>Three</cmdk-item>
+      </cmdk-group>
+    </template>
+
+    <script type="module">
+      const root = document.querySelector("cmdk-root")
+      const numbers = document.getElementById("numbers").content.firstElementChild
+
+      document.querySelector("[data-testid=forceMount]").addEventListener("click", () => {
+        document.getElementById("letters").toggleAttribute("force-mount")
+      })
+
+      // The Numbers group only exists while there is a search, the way
+      // upstream's page renders it conditionally.
+      root.addEventListener("cmdk:search", event => {
+        if (event.detail.search && !numbers.isConnected) {
+          root.list.sizer.append(numbers)
+        } else if (!event.detail.search) {
+          numbers.remove()
+        }
+      })
+    </script>
+  </body>
+</html>

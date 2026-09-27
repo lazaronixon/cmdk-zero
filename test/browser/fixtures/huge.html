@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>cmdk-zero — huge</title>
+    <link rel="stylesheet" href="/cmdk-zero.css">
+    <script type="module" src="/setup.js"></script>
+  </head>
+  <body>
+    <cmdk-root>
+      <input placeholder="Search…">
+      <cmdk-list>
+        <cmdk-empty>No results.</cmdk-empty>
+      </cmdk-list>
+    </cmdk-root>
+
+    <!-- Built while parsing, so the menu upgrades with every item already in
+         place — the worst case for the first pass. -->
+    <script>
+      const list = document.querySelector("cmdk-list")
+      const fragment = document.createDocumentFragment()
+
+      for (let group = 0; group < 30; group++) {
+        const element = document.createElement("cmdk-group")
+        element.setAttribute("heading", `Group ${group}`)
+
+        for (let item = 0; item < 100; item++) {
+          const child = document.createElement("cmdk-item")
+          child.textContent = `Item ${group}-${item}`
+          element.append(child)
+        }
+
+        fragment.append(element)
+      }
+
+      list.append(fragment)
+    </script>
+  </body>
+</html>

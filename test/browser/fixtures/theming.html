@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>cmdk-zero — theming</title>
+    <link rel="stylesheet" href="/cmdk-zero.css">
+    <script type="module" src="/setup.js"></script>
+    <style>
+      .themed {
+        --cmdk-item-height: 40px;
+        --cmdk-item-selected-background: rgb(0, 0, 255);
+        --cmdk-item-selected-color: rgb(255, 255, 255);
+        --cmdk-border-color: rgb(255, 0, 0);
+      }
+    </style>
+  </head>
+  <body>
+    <cmdk-root id="default">
+      <input>
+      <cmdk-list>
+        <cmdk-item>Apple</cmdk-item>
+        <cmdk-item>Banana</cmdk-item>
+      </cmdk-list>
+    </cmdk-root>
+
+    <div class="themed">
+      <cmdk-root id="themed">
+        <input>
+        <cmdk-list>
+          <cmdk-item>Apple</cmdk-item>
+          <cmdk-item>Banana</cmdk-item>
+        </cmdk-list>
+      </cmdk-root>
+
+      <cmdk-root id="inline" style="--cmdk-item-height: 64px">
+        <input>
+        <cmdk-list>
+          <cmdk-item>Apple</cmdk-item>
+        </cmdk-list>
+      </cmdk-root>
+    </div>
+  </body>
+</html>

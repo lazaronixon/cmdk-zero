@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>cmdk-zero — item, advanced</title>
+    <link rel="stylesheet" href="/cmdk-zero.css">
+    <script type="module" src="/setup.js"></script>
+  </head>
+  <body>
+    <button data-testid="increment">Increment count</button>
+
+    <cmdk-root>
+      <input placeholder="Search…">
+      <cmdk-list>
+        <cmdk-empty>No results.</cmdk-empty>
+        <cmdk-item>Item A <span class="count">0</span></cmdk-item>
+        <cmdk-item>Item B <span class="count">0</span></cmdk-item>
+      </cmdk-list>
+    </cmdk-root>
+
+    <script type="module">
+      let count = 0
+
+      document.querySelector("[data-testid=increment]").addEventListener("click", () => {
+        count++
+        document.querySelectorAll(".count").forEach(element => { element.textContent = String(count) })
+      })
+    </script>
+  </body>
+</html>

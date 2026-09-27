@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>cmdk-zero — item</title>
+    <link rel="stylesheet" href="/cmdk-zero.css">
+    <script type="module" src="/setup.js"></script>
+  </head>
+  <body>
+    <button data-testid="mount">Toggle item B</button>
+    <button data-testid="unmount">Toggle item A</button>
+    <button data-testid="many">Toggle many items</button>
+    <button data-testid="forceMount">Force mount item A</button>
+
+    <cmdk-root>
+      <input placeholder="Search…">
+      <cmdk-list>
+        <cmdk-empty>No results.</cmdk-empty>
+        <cmdk-item id="item-a">A</cmdk-item>
+      </cmdk-list>
+    </cmdk-root>
+
+    <script type="module">
+      const list = document.querySelector("cmdk-list")
+      const itemA = document.getElementById("item-a")
+      const many = [ "1", "2", "3" ].map(text => Object.assign(document.createElement("cmdk-item"), { textContent: text }))
+      const itemB = Object.assign(document.createElement("cmdk-item"), { textContent: "B" })
+
+      document.querySelector("[data-testid=mount]").addEventListener("click", () => {
+        itemB.isConnected ? itemB.remove() : list.append(itemB)
+      })
+
+      document.querySelector("[data-testid=unmount]").addEventListener("click", () => {
+        itemA.isConnected ? itemA.remove() : list.prepend(itemA)
+      })
+
+      // Added before item B, the way upstream's page renders them.
+      document.querySelector("[data-testid=many]").addEventListener("click", () => {
+        if (many[0].isConnected) {
+          many.forEach(item => item.remove())
+        } else if (itemB.isConnected) {
+          itemB.before(...many)
+        } else {
+          list.append(...many)
+        }
+      })
+
+      document.querySelector("[data-testid=forceMount]").addEventListener("click", () => {
+        itemA.toggleAttribute("force-mount")
+      })
+    </script>
+  </body>
+</html>

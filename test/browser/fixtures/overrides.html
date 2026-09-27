@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>cmdk-zero — overrides</title>
+    <script type="module" src="/setup.js"></script>
+    <style>
+      /* Deliberately more specific than anything a theme would write, to prove
+         a hidden part stays hidden regardless. */
+      #overridden cmdk-item.flex { display: flex; }
+      #overridden cmdk-list { display: grid; }
+    </style>
+  </head>
+  <body>
+    <!-- No theme linked: only the machinery the script injects. -->
+    <cmdk-root id="plain">
+      <input>
+      <cmdk-list>
+        <cmdk-item>Apple</cmdk-item>
+        <cmdk-item>Banana</cmdk-item>
+      </cmdk-list>
+    </cmdk-root>
+
+    <cmdk-root id="overridden">
+      <input>
+      <cmdk-list>
+        <cmdk-item class="flex">Apple</cmdk-item>
+        <cmdk-item class="flex">Banana</cmdk-item>
+      </cmdk-list>
+    </cmdk-root>
+  </body>
+</html>

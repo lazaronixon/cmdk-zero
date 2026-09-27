@@ -1,0 +1,7 @@
+node_modules/
+dist/
+test/browser/playwright-report/
+test/browser/test-results/
+coverage/
+.DS_Store
+*.log

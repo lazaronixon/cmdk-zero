@@ -1,0 +1,183 @@
+/*
+ * cmdk-zero — default theme.
+ *
+ * Every value below is a custom property with a fallback, so nothing here has to
+ * be overridden with more specific selectors. Redefine the properties wherever
+ * you like — on `:root`, on a container, or on a single `cmdk-root` — and the
+ * menu follows.
+ */
+
+:root {
+  --cmdk-width: 40rem;
+  --cmdk-padding: 0.5rem;
+  --cmdk-radius: 0.75rem;
+  --cmdk-background: #ffffff;
+  --cmdk-border-width: 1px;
+  --cmdk-border-color: #e4e4e7;
+  --cmdk-shadow: 0 16px 70px rgb(0 0 0 / 0.2);
+
+  --cmdk-color: #18181b;
+  --cmdk-muted-color: #71717a;
+  --cmdk-font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --cmdk-font-size: 0.875rem;
+
+  --cmdk-input-font-size: 1.0625rem;
+  --cmdk-input-padding: 0.5rem 0.5rem 1rem;
+  --cmdk-input-gap: 1rem;
+  --cmdk-placeholder-color: #a1a1aa;
+
+  --cmdk-list-height-limit: 20.625rem;
+  --cmdk-list-max-height: 25rem;
+
+  --cmdk-item-height: 3rem;
+  --cmdk-item-padding: 0 1rem;
+  --cmdk-item-gap: 0.5rem;
+  --cmdk-item-spacing: 0.25rem;
+  --cmdk-item-radius: 0.5rem;
+  --cmdk-item-color: #3f3f46;
+  --cmdk-item-selected-background: #f4f4f5;
+  --cmdk-item-selected-color: #18181b;
+  --cmdk-item-disabled-color: #a1a1aa;
+
+  --cmdk-heading-font-size: 0.75rem;
+  --cmdk-heading-padding: 0 0.5rem;
+  --cmdk-heading-spacing: 0.5rem;
+  --cmdk-group-spacing: 0.5rem;
+
+  --cmdk-separator-color: #e4e4e7;
+  --cmdk-separator-spacing: 0.25rem;
+
+  --cmdk-empty-height: 3rem;
+
+  --cmdk-dialog-offset: 20vh;
+  --cmdk-backdrop: rgb(24 24 27 / 0.3);
+
+  --cmdk-transition-duration: 100ms;
+  --cmdk-transition-easing: ease;
+}
+
+cmdk-root {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--cmdk-width, 40rem);
+  padding: var(--cmdk-padding, 0.5rem);
+  overflow: hidden;
+  color: var(--cmdk-color, #18181b);
+  background: var(--cmdk-background, #ffffff);
+  border: var(--cmdk-border-width, 1px) solid var(--cmdk-border-color, #e4e4e7);
+  border-radius: var(--cmdk-radius, 0.75rem);
+  box-shadow: var(--cmdk-shadow, 0 16px 70px rgb(0 0 0 / 0.2));
+  font-family: var(--cmdk-font-family, system-ui, sans-serif);
+  font-size: var(--cmdk-font-size, 0.875rem);
+  outline: none;
+}
+
+cmdk-root [data-cmdk-input] {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 0 var(--cmdk-input-gap, 1rem);
+  padding: var(--cmdk-input-padding, 0.5rem 0.5rem 1rem);
+  color: inherit;
+  background: transparent;
+  border: none;
+  border-bottom: var(--cmdk-border-width, 1px) solid var(--cmdk-border-color, #e4e4e7);
+  border-radius: 0;
+  font-family: inherit;
+  font-size: var(--cmdk-input-font-size, 1.0625rem);
+  outline: none;
+}
+
+cmdk-root [data-cmdk-input]::placeholder {
+  color: var(--cmdk-placeholder-color, #a1a1aa);
+}
+
+cmdk-list {
+  height: min(var(--cmdk-list-height-limit, 20.625rem), var(--cmdk-list-height));
+  max-height: var(--cmdk-list-max-height, 25rem);
+  overflow: auto;
+  outline: none;
+  transition: height var(--cmdk-transition-duration, 100ms) var(--cmdk-transition-easing, ease);
+}
+
+cmdk-item {
+  display: flex;
+  align-items: center;
+  gap: var(--cmdk-item-gap, 0.5rem);
+  height: var(--cmdk-item-height, 3rem);
+  padding: var(--cmdk-item-padding, 0 1rem);
+  color: var(--cmdk-item-color, #3f3f46);
+  border-radius: var(--cmdk-item-radius, 0.5rem);
+  cursor: pointer;
+}
+
+cmdk-item + cmdk-item {
+  margin-top: var(--cmdk-item-spacing, 0.25rem);
+}
+
+cmdk-item[data-selected] {
+  color: var(--cmdk-item-selected-color, #18181b);
+  background: var(--cmdk-item-selected-background, #f4f4f5);
+}
+
+cmdk-item[data-disabled] {
+  color: var(--cmdk-item-disabled-color, #a1a1aa);
+  cursor: not-allowed;
+}
+
+:not([hidden]) + cmdk-group {
+  margin-top: var(--cmdk-group-spacing, 0.5rem);
+}
+
+cmdk-group-heading {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--cmdk-heading-spacing, 0.5rem);
+  padding: var(--cmdk-heading-padding, 0 0.5rem);
+  color: var(--cmdk-muted-color, #71717a);
+  font-size: var(--cmdk-heading-font-size, 0.75rem);
+}
+
+cmdk-separator {
+  height: var(--cmdk-border-width, 1px);
+  margin: var(--cmdk-separator-spacing, 0.25rem) 0;
+  background: var(--cmdk-separator-color, #e4e4e7);
+}
+
+cmdk-empty,
+cmdk-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--cmdk-empty-height, 3rem);
+  color: var(--cmdk-muted-color, #71717a);
+  white-space: pre-wrap;
+}
+
+/* Before the element is upgraded — and forever, if JavaScript never runs — the
+   list shows every item, so nothing is lost; it just cannot be filtered. */
+cmdk-root:not(:defined) cmdk-empty {
+  display: none;
+}
+
+/* A menu inside a native `<dialog>`: the dialog draws the overlay, traps focus
+   and closes on Escape, and the menu is the dialog's only surface. */
+dialog:has(> cmdk-root) {
+  width: 100%;
+  max-width: var(--cmdk-width, 40rem);
+  margin: var(--cmdk-dialog-offset, 20vh) auto auto;
+  padding: 0;
+  overflow: visible;
+  color: inherit;
+  background: transparent;
+  border: none;
+}
+
+dialog:has(> cmdk-root)::backdrop {
+  background: var(--cmdk-backdrop, rgb(24 24 27 / 0.3));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  cmdk-list {
+    transition: none;
+  }
+}

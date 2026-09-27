@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>cmdk-zero — basic</title>
+    <link rel="stylesheet" href="/cmdk-zero.css">
+    <script type="module" src="/setup.js"></script>
+  </head>
+  <body>
+    <cmdk-root class="root" label="Command Menu">
+      <input placeholder="Search…" class="input">
+      <cmdk-list class="list">
+        <cmdk-empty class="empty">No results.</cmdk-empty>
+        <cmdk-item keywords="key" class="item">Item</cmdk-item>
+        <cmdk-item value="xxx" class="item">Value</cmdk-item>
+      </cmdk-list>
+    </cmdk-root>
+  </body>
+</html>

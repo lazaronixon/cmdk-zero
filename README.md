@@ -118,7 +118,8 @@ Listen on the item for one action, or on the menu for all of them.
 
 A native `<dialog>` already draws the overlay, traps focus, closes on Escape and
 honours `autofocus` — so the menu needs nothing more. The theme styles
-`dialog:has(> cmdk-root)` and its `::backdrop`.
+`dialog:has(> cmdk-root)` so the menu is its only surface, and leaves the
+`::backdrop` to your own dialog styles.
 
 ```html
 <dialog id="menu">
@@ -254,7 +255,6 @@ container, or on a single element:
 | `--cmdk-separator-spacing` | `0.25rem` |
 | `--cmdk-empty-height` | `3rem` |
 | `--cmdk-dialog-offset` | `20vh` |
-| `--cmdk-backdrop` | `rgb(0 0 0 / 0.3)` |
 | `--cmdk-transition-duration` | `100ms` |
 | `--cmdk-transition-easing` | `ease` |
 

@@ -17,9 +17,6 @@ test.describe("dialog", () => {
     expect(await dialog.evaluate(element => element.matches(":modal"))).toBe(true)
     await expect(dialog.locator("cmdk-root")).toHaveCount(1)
     await expect(cmdk.items).toHaveCount(2)
-
-    const overlay = await dialog.evaluate(element => getComputedStyle(element, "::backdrop").backgroundColor)
-    expect(overlay).toBe("rgba(0, 0, 0, 0.3)")
   })
 })
 

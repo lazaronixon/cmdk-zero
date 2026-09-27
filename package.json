@@ -1,6 +1,6 @@
 {
   "name": "cmdk-zero",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "cmdk-zero - Fast, composable, unstyled command menu. A zero-dependency command menu custom element, themed with CSS variables.",
   "module": "dist/cmdk-zero.esm.js",
   "type": "module",

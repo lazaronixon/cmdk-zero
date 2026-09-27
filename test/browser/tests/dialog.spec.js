@@ -52,5 +52,5 @@ test("draws the backdrop from the theme", async ({ page }) => {
   await page.getByTestId("open").click()
 
   const backdrop = await page.locator("dialog").evaluate(dialog => getComputedStyle(dialog, "::backdrop").backgroundColor)
-  expect(backdrop).toBe("rgba(24, 24, 27, 0.3)")
+  expect(backdrop).toBe("rgba(0, 0, 0, 0.3)")
 })

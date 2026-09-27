@@ -5,6 +5,8 @@
  * be overridden with more specific selectors. Redefine the properties wherever
  * you like — on `:root`, on a container, or on a single `cmdk-root` — and the
  * menu follows.
+ *
+ * The look is cmdk's Vercel preset, on the same neutral gray scale.
  */
 
 :root {
@@ -13,18 +15,18 @@
   --cmdk-radius: 0.75rem;
   --cmdk-background: #ffffff;
   --cmdk-border-width: 1px;
-  --cmdk-border-color: #e4e4e7;
+  --cmdk-border-color: #e2e2e2;
   --cmdk-shadow: 0 16px 70px rgb(0 0 0 / 0.2);
 
-  --cmdk-color: #18181b;
-  --cmdk-muted-color: #71717a;
+  --cmdk-color: #171717;
+  --cmdk-muted-color: #6f6f6f;
   --cmdk-font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   --cmdk-font-size: 0.875rem;
 
   --cmdk-input-font-size: 1.0625rem;
   --cmdk-input-padding: 0.5rem 0.5rem 1rem;
   --cmdk-input-gap: 1rem;
-  --cmdk-placeholder-color: #a1a1aa;
+  --cmdk-placeholder-color: #8f8f8f;
 
   --cmdk-list-height-limit: 20.625rem;
   --cmdk-list-max-height: 25rem;
@@ -34,23 +36,24 @@
   --cmdk-item-gap: 0.5rem;
   --cmdk-item-spacing: 0.25rem;
   --cmdk-item-radius: 0.5rem;
-  --cmdk-item-color: #3f3f46;
-  --cmdk-item-selected-background: #f4f4f5;
-  --cmdk-item-selected-color: #18181b;
-  --cmdk-item-disabled-color: #a1a1aa;
+  --cmdk-item-color: #6f6f6f;
+  --cmdk-item-selected-background: rgb(0 0 0 / 0.047);
+  --cmdk-item-selected-color: #171717;
+  --cmdk-item-active-background: #ededed;
+  --cmdk-item-disabled-color: #c7c7c7;
 
   --cmdk-heading-font-size: 0.75rem;
   --cmdk-heading-padding: 0 0.5rem;
   --cmdk-heading-spacing: 0.5rem;
   --cmdk-group-spacing: 0.5rem;
 
-  --cmdk-separator-color: #e4e4e7;
+  --cmdk-separator-color: #e8e8e8;
   --cmdk-separator-spacing: 0.25rem;
 
   --cmdk-empty-height: 3rem;
 
   --cmdk-dialog-offset: 20vh;
-  --cmdk-backdrop: rgb(24 24 27 / 0.3);
+  --cmdk-backdrop: rgb(0 0 0 / 0.3);
 
   --cmdk-transition-duration: 100ms;
   --cmdk-transition-easing: ease;
@@ -62,9 +65,9 @@ cmdk-root {
   max-width: var(--cmdk-width, 40rem);
   padding: var(--cmdk-padding, 0.5rem);
   overflow: hidden;
-  color: var(--cmdk-color, #18181b);
+  color: var(--cmdk-color, #171717);
   background: var(--cmdk-background, #ffffff);
-  border: var(--cmdk-border-width, 1px) solid var(--cmdk-border-color, #e4e4e7);
+  border: var(--cmdk-border-width, 1px) solid var(--cmdk-border-color, #e2e2e2);
   border-radius: var(--cmdk-radius, 0.75rem);
   box-shadow: var(--cmdk-shadow, 0 16px 70px rgb(0 0 0 / 0.2));
   font-family: var(--cmdk-font-family, system-ui, sans-serif);
@@ -80,7 +83,7 @@ cmdk-root [data-cmdk-input] {
   color: inherit;
   background: transparent;
   border: none;
-  border-bottom: var(--cmdk-border-width, 1px) solid var(--cmdk-border-color, #e4e4e7);
+  border-bottom: var(--cmdk-border-width, 1px) solid var(--cmdk-border-color, #e2e2e2);
   border-radius: 0;
   font-family: inherit;
   font-size: var(--cmdk-input-font-size, 1.0625rem);
@@ -88,7 +91,7 @@ cmdk-root [data-cmdk-input] {
 }
 
 cmdk-root [data-cmdk-input]::placeholder {
-  color: var(--cmdk-placeholder-color, #a1a1aa);
+  color: var(--cmdk-placeholder-color, #8f8f8f);
 }
 
 cmdk-list {
@@ -105,7 +108,7 @@ cmdk-item {
   gap: var(--cmdk-item-gap, 0.5rem);
   height: var(--cmdk-item-height, 3rem);
   padding: var(--cmdk-item-padding, 0 1rem);
-  color: var(--cmdk-item-color, #3f3f46);
+  color: var(--cmdk-item-color, #6f6f6f);
   border-radius: var(--cmdk-item-radius, 0.5rem);
   cursor: pointer;
 }
@@ -115,12 +118,20 @@ cmdk-item + cmdk-item {
 }
 
 cmdk-item[data-selected] {
-  color: var(--cmdk-item-selected-color, #18181b);
-  background: var(--cmdk-item-selected-background, #f4f4f5);
+  color: var(--cmdk-item-selected-color, #171717);
+  background: var(--cmdk-item-selected-background, rgb(0 0 0 / 0.047));
+}
+
+/* Only the press animates, so moving the selection with the keyboard stays
+   instant. */
+cmdk-item:active {
+  background: var(--cmdk-item-active-background, #ededed);
+  transition: background-color var(--cmdk-transition-duration, 100ms) var(--cmdk-transition-easing, ease);
 }
 
 cmdk-item[data-disabled] {
-  color: var(--cmdk-item-disabled-color, #a1a1aa);
+  color: var(--cmdk-item-disabled-color, #c7c7c7);
+  background: transparent;
   cursor: not-allowed;
 }
 
@@ -133,14 +144,14 @@ cmdk-group-heading {
   align-items: center;
   margin-bottom: var(--cmdk-heading-spacing, 0.5rem);
   padding: var(--cmdk-heading-padding, 0 0.5rem);
-  color: var(--cmdk-muted-color, #71717a);
+  color: var(--cmdk-muted-color, #6f6f6f);
   font-size: var(--cmdk-heading-font-size, 0.75rem);
 }
 
 cmdk-separator {
   height: var(--cmdk-border-width, 1px);
   margin: var(--cmdk-separator-spacing, 0.25rem) 0;
-  background: var(--cmdk-separator-color, #e4e4e7);
+  background: var(--cmdk-separator-color, #e8e8e8);
 }
 
 cmdk-empty,
@@ -149,7 +160,7 @@ cmdk-loading {
   align-items: center;
   justify-content: center;
   height: var(--cmdk-empty-height, 3rem);
-  color: var(--cmdk-muted-color, #71717a);
+  color: var(--cmdk-muted-color, #6f6f6f);
   white-space: pre-wrap;
 }
 
@@ -173,11 +184,12 @@ dialog:has(> cmdk-root) {
 }
 
 dialog:has(> cmdk-root)::backdrop {
-  background: var(--cmdk-backdrop, rgb(24 24 27 / 0.3));
+  background: var(--cmdk-backdrop, rgb(0 0 0 / 0.3));
 }
 
 @media (prefers-reduced-motion: reduce) {
-  cmdk-list {
+  cmdk-list,
+  cmdk-item:active {
     transition: none;
   }
 }

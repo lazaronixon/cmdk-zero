@@ -224,16 +224,16 @@ container, or on a single element:
 | `--cmdk-radius` | `0.75rem` |
 | `--cmdk-background` | `#ffffff` |
 | `--cmdk-border-width` | `1px` |
-| `--cmdk-border-color` | `#e4e4e7` |
+| `--cmdk-border-color` | `#e2e2e2` |
 | `--cmdk-shadow` | `0 16px 70px rgb(0 0 0 / 0.2)` |
-| `--cmdk-color` | `#18181b` |
-| `--cmdk-muted-color` | `#71717a` |
+| `--cmdk-color` | `#171717` |
+| `--cmdk-muted-color` | `#6f6f6f` |
 | `--cmdk-font-family` | `system-ui, …` |
 | `--cmdk-font-size` | `0.875rem` |
 | `--cmdk-input-font-size` | `1.0625rem` |
 | `--cmdk-input-padding` | `0.5rem 0.5rem 1rem` |
 | `--cmdk-input-gap` | `1rem` |
-| `--cmdk-placeholder-color` | `#a1a1aa` |
+| `--cmdk-placeholder-color` | `#8f8f8f` |
 | `--cmdk-list-height-limit` | `20.625rem` |
 | `--cmdk-list-max-height` | `25rem` |
 | `--cmdk-item-height` | `3rem` |
@@ -241,21 +241,25 @@ container, or on a single element:
 | `--cmdk-item-gap` | `0.5rem` |
 | `--cmdk-item-spacing` | `0.25rem` |
 | `--cmdk-item-radius` | `0.5rem` |
-| `--cmdk-item-color` | `#3f3f46` |
-| `--cmdk-item-selected-background` | `#f4f4f5` |
-| `--cmdk-item-selected-color` | `#18181b` |
-| `--cmdk-item-disabled-color` | `#a1a1aa` |
+| `--cmdk-item-color` | `#6f6f6f` |
+| `--cmdk-item-selected-background` | `rgb(0 0 0 / 0.047)` |
+| `--cmdk-item-selected-color` | `#171717` |
+| `--cmdk-item-active-background` | `#ededed` |
+| `--cmdk-item-disabled-color` | `#c7c7c7` |
 | `--cmdk-heading-font-size` | `0.75rem` |
 | `--cmdk-heading-padding` | `0 0.5rem` |
 | `--cmdk-heading-spacing` | `0.5rem` |
 | `--cmdk-group-spacing` | `0.5rem` |
-| `--cmdk-separator-color` | `#e4e4e7` |
+| `--cmdk-separator-color` | `#e8e8e8` |
 | `--cmdk-separator-spacing` | `0.25rem` |
 | `--cmdk-empty-height` | `3rem` |
 | `--cmdk-dialog-offset` | `20vh` |
-| `--cmdk-backdrop` | `rgb(24 24 27 / 0.3)` |
+| `--cmdk-backdrop` | `rgb(0 0 0 / 0.3)` |
 | `--cmdk-transition-duration` | `100ms` |
 | `--cmdk-transition-easing` | `ease` |
+
+The defaults reproduce cmdk's Vercel preset — the same sizes, spacing and neutral
+gray scale — so a menu looks like the original out of the box.
 
 The theme ships one set of colours and does not react to `prefers-color-scheme`.
 Redefine the properties yourself for a dark palette.

@@ -31,11 +31,11 @@
     "not dead"
   ],
   "devDependencies": {
-    "@eslint/css": "^1.2.0",
+    "@eslint/css": "^2.0.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.52.0",
     "@rollup/plugin-terser": "^1.0.0",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^5.0.1",
     "eslint": "^10.3.0",
     "eslint-plugin-compat": "^7.0.2",
     "globals": "^17.6.0",
@@ -44,7 +44,7 @@
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-gzip": "^4.1.1",
     "vite": "^8.2.1",
-    "vitest": "^4.0.16"
+    "vitest": "^5.0.1"
   },
   "scripts": {
     "build": "rollup -c",
